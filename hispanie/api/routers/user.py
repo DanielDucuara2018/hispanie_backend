@@ -51,7 +51,7 @@ async def login_for_access_token(
         content=Token(
             access_token=access_token,
             token_type="bearer",
-            token_expiry=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            token_expiration=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         ).dict(),
     )
 
