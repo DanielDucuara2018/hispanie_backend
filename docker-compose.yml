@@ -1,0 +1,36 @@
+networks:
+  hispanie_bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 169.254.10.0/24
+
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    networks:
+      hispanie_bridge:
+        ipv4_address: 169.254.10.2
+        aliases:
+          - "hispanie-backend.app"
+    ports:
+      - 3201:3201
+    volumes:
+      - ./:/app/
+      - /app/report_calculation.egg-info/
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17.1-alpine
+    networks:
+      hispanie_bridge:
+        ipv4_address: 169.254.10.3
+        aliases:
+          - "hispanie-backend.db"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./pgsql/init.d:/docker-entrypoint-initdb.d
