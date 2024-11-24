@@ -21,7 +21,8 @@ services:
       - ./:/app/
       - /app/report_calculation.egg-info/
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: postgres:17.1-alpine
@@ -34,3 +35,8 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./pgsql/init.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
