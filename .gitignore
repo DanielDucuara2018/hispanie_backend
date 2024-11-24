@@ -173,3 +173,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 supervisord.pid
+.ruff_cache/

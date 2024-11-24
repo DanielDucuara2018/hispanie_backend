@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # from hispanie.api.routers.user import router as user_router
-# from hispanie.db import initialize
+from hispanie.db import initialize
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -12,7 +12,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# initialize(True)
+initialize(True)
 
 app = FastAPI()
 

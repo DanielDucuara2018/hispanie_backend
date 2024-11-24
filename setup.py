@@ -4,7 +4,7 @@ VERSION = "0.1"
 
 INSTALL_REQUIRES = [
     "alembic>=1.14.0",
-    # "apischema==0.15.6",
+    "apischema>=0.19.0",
     "asyncio>=3.4.3",
     "bcrypt>=4.2.1",
     # "configparser",

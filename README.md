@@ -2,6 +2,12 @@
 
 Backend for hispanie app
 
+## DB creation
+
+```bash
+docker exec -it hispanie_backend-postgres-1 psql -U postgres -c "CREATE DATABASE hispanie;"
+```
+
 ## pre-commit
 
 ```bash
