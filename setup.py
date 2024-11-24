@@ -7,7 +7,6 @@ INSTALL_REQUIRES = [
     "apischema>=0.19.0",
     "asyncio>=3.4.3",
     "bcrypt>=4.2.1",
-    # "configparser",
     "fastapi[all]>=0.115.5",
     # "fastapi-utils",
     "psycopg2>=2.9.10",
