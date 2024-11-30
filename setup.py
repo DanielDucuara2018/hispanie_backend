@@ -1,3 +1,5 @@
+# TODO remove setup.py deprecated
+
 from setuptools import find_packages, setup
 
 VERSION = "0.1"
@@ -11,7 +13,7 @@ INSTALL_REQUIRES = [
     # "fastapi-utils",
     "psycopg2>=2.9.10",
     # "python-binance==1.0.16",
-    # "python-jose[cryptography]==3.3.0",
+    "python-jose[cryptography]==3.3.0",
     # "python-telegram-bot==20.0a2",
     "SQLAlchemy>=2.0.36",
 ]

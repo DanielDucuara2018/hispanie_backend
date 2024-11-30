@@ -2,7 +2,7 @@ from datetime import date
 from typing import Any, Optional, Type, TypeVar
 
 from sqlalchemy import ARRAY, Date, cast
-from sqlalchemy.orm import registry
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 from hispanie import db
@@ -10,10 +10,9 @@ from hispanie.errors import NoDataFound
 from hispanie.utils import to_list
 
 T = TypeVar("T", bound="Base")
-mapper_registry = registry()
 
 
-class Base:
+class Base(DeclarativeBase):
     @classmethod
     def find(
         cls: Type[T],

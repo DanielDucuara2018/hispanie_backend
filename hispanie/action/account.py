@@ -1,13 +1,11 @@
-from __future__ import annotations
-
 import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 
-# from hispanie.model import User as ModelUser
-# from hispanie.schema import UserRequest as SchemaUserRequest
+from ..model import Account, AccountType
+from ..schema import AccountCreateRequest
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +20,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 # create User
 
 
-# def create(user: SchemaUserRequest) -> ModelUser:
-#     logger.info("Adding new user")
-#     result = ModelUser(**dict(user)).create()
-#     logger.info("Added new user %s", result.user_id)
-#     return result
+def create(account_data: AccountCreateRequest) -> Account:
+    logger.info("Adding new account")
+    account = Account(
+        username=account_data.username,
+        email=account_data.email,
+        type=AccountType(account_data.type),
+        password=account_data.password,
+    ).create()
+    logger.info("Added new user %s", account.id)
+    return account
 
 
 # delete User

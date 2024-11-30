@@ -13,7 +13,8 @@ from alembic.command import upgrade
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from hispanie.model.base import mapper_registry
+
+from .model import Base
 
 logger = logging.getLogger(__name__)
 # logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
@@ -83,7 +84,8 @@ def get_missing_revisions(conn: Connection):
 
 def create(conn: Connection):
     # Create tables
-    mapper_registry.metadata.create_all(bind=conn)
+    logger.info("Creating tables %s", Base.metadata.tables.keys())
+    Base.metadata.create_all(bind=conn)
     # Mark the db patchs as applied
     _, script, context, script_head, _ = get_alembic_config(conn)
     context.stamp(script, script_head)
@@ -116,11 +118,23 @@ def initialize(update_schema: bool = False) -> None:
     check_db_connection(db)
     logger.info("Checking alembic migrations")
     engine = get_engine(db, suffix="?target_session_attrs=read-write")
-    with engine.connect() as conn:
-        applied_revisions = update(conn, db.ref_table, dry_run=not update_schema)
 
-    if applied_revisions and update_schema:
-        raise RuntimeError("Database is not up-to-date")
+    exists = True
+    try:
+        with engine.connect() as conn:
+            with conn.begin_nested():
+                conn.execute(f"""SELECT 1 FROM {db.ref_table} LIMIT 1""")
+    except Exception:  # TODO find the right exception
+        exists = False
+
+    if not exists:
+        Base.metadata.create_all(engine)
+
+    # TODO fix create_all process + alembic migrations. Not working
+    # applied_revisions = update(conn, db.ref_table, dry_run=not update_schema)
+
+    # if applied_revisions and update_schema:
+    #     raise RuntimeError("Database is not up-to-date")
 
 
 session = open_session(init())
