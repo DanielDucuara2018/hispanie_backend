@@ -25,7 +25,9 @@ class Account(Base):
 
     username: Mapped[str] = mapped_column(String, nullable=False)
 
-    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String, unique=True, nullable=False
+    )  # TODO handle unique errors
 
     type: Mapped[AccountType] = mapped_column(SQLAEnum(AccountType), nullable=False)
 
