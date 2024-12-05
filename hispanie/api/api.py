@@ -25,10 +25,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(account_router)
-app.include_router(event_router)
+app.include_router(account_router, prefix="/api/v1")
+app.include_router(event_router, prefix="/api/v1")
 
 
-@app.get("/")
+@app.get("/api/v1")
 async def root():
     return {"message": "Welcome to hispanie app"}

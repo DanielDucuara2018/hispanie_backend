@@ -1,13 +1,13 @@
-from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import DateTime, LargeBinary, String, func
 from sqlalchemy import Enum as SQLAEnum
+from sqlalchemy import LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..utils import generate_password_hash, idv2
 from .base import Base
 from .event import Event
+from .resources import Resource
 
 
 class AccountType(Enum):
@@ -15,7 +15,7 @@ class AccountType(Enum):
     ADMIN = "admin"
 
 
-class Account(Base):
+class Account(Base, Resource):
 
     __tablename__ = "account"
 
@@ -23,7 +23,7 @@ class Account(Base):
         String, primary_key=True, default=lambda: idv2("account", version=1)
     )
 
-    username: Mapped[str] = mapped_column(String, nullable=False)
+    username: Mapped[str] = mapped_column(String, nullable=False)  # TODO is it unique ?
 
     email: Mapped[str] = mapped_column(
         String, unique=True, nullable=False
@@ -33,13 +33,7 @@ class Account(Base):
 
     _password: Mapped[bytes] = mapped_column("password", LargeBinary, nullable=False)
 
-    creation_date: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=func.now(), nullable=False
-    )
-
-    update_date: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True, onupdate=func.now()
-    )
+    # relationships
 
     events: Mapped[list["Event"]] = relationship(
         "Event", back_populates="account", cascade="all, delete-orphan"
