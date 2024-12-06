@@ -19,7 +19,7 @@ services:
       - 3201:3201
     volumes:
       - ./:/app/
-      - /app/report_calculation.egg-info/
+      - /app/hispanie.egg-info/
     depends_on:
       postgres:
         condition: service_healthy
@@ -31,6 +31,8 @@ services:
         ipv4_address: 169.254.10.3
         aliases:
           - "hispanie-backend.db"
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:

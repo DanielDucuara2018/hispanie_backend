@@ -4,7 +4,7 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import AccountCreateUpdateRequest, AccountResponse, Token
+from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
 
 from ...action import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -37,6 +37,11 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 
 
 # Endpoint Definitions
+# TODO Implement the refresh_token_id
+# TODO Implement rate limiting for sensitive endpoints like /token to prevent brute-force attacks.
+# TODO Use Pydantic's advanced validation to enforce business rules, such as password complexity.
+# TODO Consider creating a separate set of admin endpoints under a different prefix (e.g., /admin/accounts) for better organization.
+# TODO Add logging statements to capture important actions like user authentication and account creation.
 @router.post("/login", response_model=Token)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -76,7 +81,7 @@ async def login(
 
 
 @router.post("/", response_model=AccountResponse)
-async def create(account_data: AccountCreateUpdateRequest) -> AccountResponse:
+async def create(account_data: AccountCreateRequest) -> AccountResponse:
     """
     Create a new account with the provided data.
     """
@@ -104,16 +109,17 @@ async def read(
 
 
 # TODO check AccountCreateUpdateRequest because it could overide everything
+# TODO Use a separate endpoint for password updates to enhance security. Necessary ?
 @router.put("/", response_model=AccountResponse)
 async def update(
-    account_request: AccountCreateUpdateRequest,
+    account_data: AccountUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ) -> AccountResponse:
     """
     Update the current account with the provided data.
     """
     try:
-        return update_account(current_account.id, account_request)
+        return update_account(current_account.id, account_data)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error updating account: {e}"

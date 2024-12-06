@@ -9,11 +9,18 @@ class Token(BaseModel):
     token_expiration: int
 
 
-class AccountCreateUpdateRequest(BaseModel):
+class AccountCreateRequest(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
     password: str = Field(..., min_length=6, max_length=100)
     type: AccountType = AccountType.USER
+
+
+class AccountUpdateRequest(BaseModel):
+    username: str | None = Field(None, min_length=3, max_length=50)
+    email: EmailStr | None = None
+    password: str | None = Field(None, min_length=6, max_length=100)
+    type: AccountType | None = None
 
 
 # Schema for Account Response
@@ -24,4 +31,4 @@ class AccountResponse(BaseModel):
     type: AccountType
 
     class Config:
-        orm_mode = True
+        from_attributes = True

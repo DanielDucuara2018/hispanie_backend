@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from hispanie.schema import AccountResponse
 
 from ...action import create_event, delete_event, get_current_account, read_events, update_event
-from ...schema import EventCreateUpdateRequest, EventResponse
+from ...schema import EventCreateRequest, EventResponse
 
 router = APIRouter(
     prefix="/events",
@@ -17,11 +17,11 @@ router = APIRouter(
 # Create Event
 @router.post("/", response_model=EventResponse)
 async def create(
-    event_data: EventCreateUpdateRequest,
+    event_data: EventCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
-    Create a new event for the authenticated user.
+    Create a new event for the authenticated account.
     """
     try:
         return create_event(event_data, current_account.id)
@@ -35,7 +35,7 @@ async def read(
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
-    Retrieve all events for the authenticated user.
+    Retrieve all events for the authenticated account.
     """
     try:
         return read_events(account_id=current_account.id)
@@ -47,11 +47,11 @@ async def read(
 @router.put("/{event_id}", response_model=EventResponse)
 async def update(
     event_id: int,
-    event_update: EventCreateUpdateRequest,
+    event_update: EventCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
-    Update an event by its ID. The event must belong to the current user.
+    Update an event by its ID. The event must belong to the current account.
     """
     try:
         return update_event(event_id, current_account.id, event_update)
@@ -66,7 +66,7 @@ async def delete(
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
-    Delete an event by its ID. The event must belong to the current user.
+    Delete an event by its ID. The event must belong to the current account.
     """
     try:
         return delete_event(event_id, current_account.id)

@@ -13,8 +13,7 @@ from alembic.command import upgrade
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
-
-from .model import Base
+from hispanie.model import Base
 
 logger = logging.getLogger(__name__)
 # logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)

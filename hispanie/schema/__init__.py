@@ -1,10 +1,12 @@
-from .account import AccountCreateUpdateRequest, AccountResponse, Token
-from .event import EventCreateUpdateRequest, EventResponse
+from .account import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
+from .event import EventCreateRequest, EventResponse, EventUpdateRequest
 
 __all__ = [
-    "AccountCreateUpdateRequest",
+    "AccountCreateRequest",
     "AccountResponse",
-    "EventCreateUpdateRequest",
+    "AccountUpdateRequest",
+    "EventCreateRequest",
     "EventResponse",
+    "EventUpdateRequest",
     "Token",
 ]

@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from ..model import Account, AccountType
-from ..schema import AccountCreateUpdateRequest
+from ..schema import AccountCreateRequest, AccountUpdateRequest
 from ..utils import check_password_hash
 
 logger = logging.getLogger(__name__)
@@ -17,12 +17,12 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/accounts/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/accounts/login")
 
 # create account
 
 
-def create(account_data: AccountCreateUpdateRequest) -> Account:
+def create(account_data: AccountCreateRequest) -> Account:
     logger.info("Adding new account")
     account = Account(
         username=account_data.username,
@@ -51,10 +51,10 @@ def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
 # update account
 
 
-def update(account_id: str, account_data: AccountCreateUpdateRequest) -> Account:
+def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
     logger.info("Updating %s with data %s", account_id, account_data)
     account = Account.get(id=account_id)
-    result = account.update(**dict(account_data))
+    result = account.update(**account_data.dict(exclude_unset=True))
     logger.info("Updated account %s", account_id)
     return result
 
