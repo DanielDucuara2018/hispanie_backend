@@ -37,6 +37,7 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 
 
 # Endpoint Definitions
+# TODO create a infinite token to get all events and accounts (artists) from frontend
 # TODO Implement the refresh_token_id
 # TODO Implement rate limiting for sensitive endpoints like /token to prevent brute-force attacks.
 # TODO Use Pydantic's advanced validation to enforce business rules, such as password complexity.
@@ -45,6 +46,9 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 @router.post("/login", response_model=Token)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
+    expiration_time: Annotated[
+        int, Query(description="Set a value in minutes")
+    ] = ACCESS_TOKEN_EXPIRE_MINUTES,
     refresh_token_id: str | None = Cookie(None),
 ) -> JSONResponse:
     """
@@ -58,23 +62,23 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    expiration_time = generate_expiration_time(delta=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expiration_date = generate_expiration_time(delta=expiration_time)
     access_token = create_access_token(
         data={"sub": account.username},
-        expiration_time=expiration_time,
+        expiration_date=expiration_date,
     )
 
     response = JSONResponse(
         content=Token(
             access_token=access_token,
             token_type="bearer",
-            token_expiration=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        ).dict()
+            token_expiration_date=expiration_date,
+        ).model_dump(exclude_none=True)
     )
     response.set_cookie(
         key="sessionid",
         value=refresh_token_id or "random_generated_id",  # TODO Replace with proper logic
-        expires=expiration_time,
+        expires=expiration_date,
         httponly=True,
     )
     return response
@@ -93,6 +97,7 @@ async def create(account_data: AccountCreateRequest) -> AccountResponse:
         )
 
 
+# TODO add maybe a filter to get artists, users, and admin ?
 @router.get("/", response_model=AccountResponse | list[AccountResponse])
 async def read(
     current_account: AccountResponse = Depends(get_current_account),

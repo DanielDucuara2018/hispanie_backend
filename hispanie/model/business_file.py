@@ -6,9 +6,9 @@ from .resource import Resource
 
 
 # Association Class for Many-to-Many relationship
-class EventFile(Base, Resource):
-    __tablename__ = "event_file"
+class BusinessFile(Base, Resource):
+    __tablename__ = "business_file"
 
-    event_id: Mapped[str] = mapped_column(ForeignKey("event.id"), primary_key=True)
+    business_id: Mapped[str] = mapped_column(ForeignKey("business.id"), primary_key=True)
 
     file_id: Mapped[str] = mapped_column(ForeignKey("file.id"), primary_key=True)

@@ -1,6 +1,6 @@
 import logging
 
-from ..model import Event, EventCategory
+from ..model import Event
 from ..schema import EventCreateRequest, EventUpdateRequest
 from .account import read as read_account
 
@@ -17,19 +17,10 @@ def ensure_user_owns_event(current_account_id: int, event_owner_id: int) -> None
 
 
 def create(event_data: EventCreateRequest, account_id: str) -> Event:
-    logger.info("Adding new account")
+    logger.info("Adding new event %s", event_data)
     account = read_account(account_id)
-    event = Event(
-        name=event_data.name,
-        description=event_data.description,
-        city=event_data.city,
-        latitude=event_data.latitude,
-        longitude=event_data.longitude,
-        type=EventCategory(event_data.type),
-        is_public=event_data.is_public,
-        account=account,
-    ).create()
-    logger.info("Added new user %s", event.id)
+    event = Event(account=account, **event_data.model_dump()).create()
+    logger.info("Added new event %s", event.id)
     return event
 
 
@@ -47,7 +38,7 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
     logger.info("Updating %s event", event_id)
     event = Event.get(id=event_id)
     ensure_user_owns_event(account_id, event.account_id)
-    result = event.update(**event_data.dict(exclude_unset=True))
+    result = event.update(**event_data.model_dump(exclude_none=True))
     logger.info("Updated event %s", event_id)
     return result
 

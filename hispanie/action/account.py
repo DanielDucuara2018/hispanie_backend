@@ -54,7 +54,7 @@ def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
 def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
     logger.info("Updating %s with data %s", account_id, account_data)
     account = Account.get(id=account_id)
-    result = account.update(**account_data.dict(exclude_unset=True))
+    result = account.update(**account_data.model_dump(exclude_none=True))
     logger.info("Updated account %s", account_id)
     return result
 
@@ -79,16 +79,16 @@ def authenticate_account(username: str, password: str) -> Account | None:
     return None
 
 
-def generate_expiration_time(delta: int = 15) -> datetime:
+def generate_expiration_time(delta: int) -> datetime:
     return datetime.now(timezone.utc) + timedelta(minutes=delta)
 
 
 # create account access token
 
 
-def create_access_token(data: dict, expiration_time: datetime) -> str:
+def create_access_token(data: dict, expiration_date: datetime) -> str:
     to_encode = data.copy()
-    to_encode.update({"exp": expiration_time})
+    to_encode.update({"exp": expiration_date})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
