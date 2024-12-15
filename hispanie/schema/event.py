@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import EventCategory
 from ..typing import CustomDateTime
@@ -75,6 +75,8 @@ class EventResponse(BaseModel):
     Schema for returning Event data.
     """
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     email: str | None
@@ -88,10 +90,7 @@ class EventResponse(BaseModel):
     price: float
     start_date: CustomDateTime
     end_date: CustomDateTime
-    # tags: list[str] #TODO fix {'type': 'list_type', 'loc': ('response', 'urls'), 'msg': 'Input should be a valid list', 'input': '{}'}
-    # urls: list[str]
+    tags: list[str]
+    urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
-
-    class Config:
-        from_attributes = True

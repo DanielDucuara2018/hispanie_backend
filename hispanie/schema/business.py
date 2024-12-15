@@ -82,8 +82,8 @@ class BusinessResponse(BaseModel):
     is_public: bool
     category: BusinessCategory
     description: str | None
-    # tags: list[str] #TODO fix {'type': 'list_type', 'loc': ('response', 'urls'), 'msg': 'Input should be a valid list', 'input': '{}'}
-    # urls: list[str]
+    tags: list[str]
+    urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
 

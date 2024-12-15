@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Float, String
+from sqlalchemy import ARRAY, Boolean, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .resource import Resource
@@ -30,7 +30,7 @@ class Entity(Resource):
     # Visibility
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    urls: Mapped[list[str] | None] = mapped_column(String, nullable=True, default=[])
+    urls: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
 
     # DONE email
     # DONE phone number
