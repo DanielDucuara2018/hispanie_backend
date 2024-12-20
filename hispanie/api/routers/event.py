@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from hispanie.schema import AccountResponse
 
 from ...action import create_event, delete_event, get_current_account, read_events, update_event
-from ...schema import EventCreateRequest, EventResponse
+from ...schema import EventCreateRequest, EventResponse, EventUpdateRequest
 
 router = APIRouter(
     prefix="/events",
@@ -46,8 +46,8 @@ async def read(
 # Update Event
 @router.put("/{event_id}", response_model=EventResponse)
 async def update(
-    event_id: int,
-    event_update: EventCreateRequest,
+    event_id: str,
+    event_update: EventUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
@@ -62,7 +62,7 @@ async def update(
 # Delete Event
 @router.delete("/{event_id}", response_model=EventResponse)
 async def delete(
-    event_id: int,
+    event_id: str,
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
