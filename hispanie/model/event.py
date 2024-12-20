@@ -53,6 +53,7 @@ class Event(Base, Entity):
     # TODO Add interesados, participates ? is a number ?
     # DONE Add url or urls ? in Entity class ? yes and yes
     # TODO Add progrmacion table -> time and name and picture ?
+    # TODO Add artists from Business model -> a relationship with Business filtering by artists ?
 
     # foreign key
 

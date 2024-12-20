@@ -2,7 +2,7 @@ import logging
 
 from ..model import Event
 from ..schema import EventCreateRequest, EventUpdateRequest
-from .account import read as read_account
+from .account import read as read_accounts
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ def ensure_user_owns_event(current_account_id: int, event_owner_id: int) -> None
 
 def create(event_data: EventCreateRequest, account_id: str) -> Event:
     logger.info("Adding new event %s", event_data)
-    account = read_account(account_id)
+    account = read_accounts(account_id)
     event = Event(account=account, **event_data.model_dump()).create()
     logger.info("Added new event %s", event.id)
     return event

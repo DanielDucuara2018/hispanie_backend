@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 
 from hispanie.schema import AccountResponse
@@ -30,7 +28,7 @@ async def create(
 
 
 # Read Events
-@router.get("/", response_model=List[EventResponse])
+@router.get("/", response_model=list[EventResponse])
 async def read(
     current_account: AccountResponse = Depends(get_current_account),
 ):

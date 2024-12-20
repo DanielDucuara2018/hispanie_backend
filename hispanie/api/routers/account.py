@@ -14,7 +14,7 @@ from ...action import (
     delete_account,
     generate_expiration_time,
     get_current_account,
-    read_account,
+    read_accounts,
     update_account,
 )
 from ...model.account import AccountType
@@ -108,7 +108,7 @@ async def read(
     """
     if show_all:
         ensure_admin_privileges(current_account)
-        return read_account()  # Replace with the method to fetch all users
+        return read_accounts()  # Replace with the method to fetch all users
 
     return current_account
 
