@@ -1,14 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
+from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest
 
 from ...action import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_account,
+    check_account_session,
     create_access_token,
     create_account,
     delete_account,
@@ -18,6 +18,7 @@ from ...action import (
     update_account,
 )
 from ...model.account import AccountType
+from ...utils import TOKEN_KEY_NAME
 
 router = APIRouter(
     prefix="/accounts",
@@ -43,16 +44,17 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 # TODO Use Pydantic's advanced validation to enforce business rules, such as password complexity.
 # TODO Consider creating a separate set of admin endpoints under a different prefix (e.g., /admin/accounts) for better organization.
 # TODO Add logging statements to capture important actions like user authentication and account creation.
-@router.post("/login", response_model=Token)
+@router.post("/login")
 async def login(
+    response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     expiration_time: Annotated[
         int, Query(description="Set a value in minutes")
     ] = ACCESS_TOKEN_EXPIRE_MINUTES,
     refresh_token_id: str | None = Cookie(None),
-) -> JSONResponse:
+):
     """
-    Authenticate a user and return an access token.
+    Authenticate a account and return an access token.
     """
     account = authenticate_account(form_data.username, form_data.password)
     if not account:
@@ -68,23 +70,32 @@ async def login(
         expiration_date=expiration_date,
     )
 
-    response = JSONResponse(
-        content=Token(
-            access_token=access_token,
-            token_type="bearer",
-            token_expiration_date=expiration_date,
-        ).model_dump(exclude_none=True)
-    )
     response.set_cookie(
-        key="sessionid",
-        value=refresh_token_id or "random_generated_id",  # TODO Replace with proper logic
+        key=TOKEN_KEY_NAME,
+        value=f"Bearer {access_token}",
         expires=expiration_date,
         httponly=True,
+        secure=False,  # Set True in production with HTTPS
+        samesite=None,
     )
-    return response
+    return {"message": "succefull login"}
 
 
-@router.post("/", response_model=AccountResponse)
+@router.post("/logout")
+async def logout(response: Response):
+    """
+    log out an account and delete the cookies info.
+    """
+    response.delete_cookie(key=TOKEN_KEY_NAME)
+    return {"message": "succefull logout"}
+
+
+@router.get("/check-session")
+async def check_session(result: str = Depends(check_account_session)):
+    return result
+
+
+@router.post("", response_model=AccountResponse)
 async def create(account_data: AccountCreateRequest) -> AccountResponse:
     """
     Create a new account with the provided data.
@@ -98,7 +109,7 @@ async def create(account_data: AccountCreateRequest) -> AccountResponse:
 
 
 # TODO add maybe a filter to get artists, users, and admin ?
-@router.get("/", response_model=AccountResponse | list[AccountResponse])
+@router.get("", response_model=AccountResponse | list[AccountResponse])
 async def read(
     current_account: AccountResponse = Depends(get_current_account),
     show_all: Annotated[bool, Query(description="Set to true to list all users if admin")] = False,
@@ -115,7 +126,7 @@ async def read(
 
 # TODO check AccountCreateUpdateRequest because it could overide everything
 # TODO Use a separate endpoint for password updates to enhance security. Necessary ?
-@router.put("/", response_model=AccountResponse)
+@router.put("", response_model=AccountResponse)
 async def update(
     account_data: AccountUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
@@ -131,7 +142,7 @@ async def update(
         )
 
 
-@router.delete("/", response_model=AccountResponse)
+@router.delete("", response_model=AccountResponse)
 async def delete(
     current_account: AccountResponse = Depends(get_current_account),
 ) -> AccountResponse:

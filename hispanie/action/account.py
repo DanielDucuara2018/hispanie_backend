@@ -2,12 +2,11 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from ..model import Account, AccountType
 from ..schema import AccountCreateRequest, AccountUpdateRequest
-from ..utils import check_password_hash
+from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,14 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/accounts/login")
+CREDENTIAL_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/accounts/login")
+
 
 # create account
 
@@ -95,21 +101,20 @@ def create_access_token(data: dict, expiration_date: datetime) -> str:
 # get account for authentification
 
 
-async def get_current_account(token: str = Depends(oauth2_scheme)) -> Account:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def check_account_session(token: str = Depends(oauth2_scheme)) -> str:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
-        raise credentials_exception
+        raise CREDENTIAL_EXCEPTION
 
     if not (username := payload.get("sub")):
-        raise credentials_exception
+        raise CREDENTIAL_EXCEPTION
 
-    users = read(username=username)
+    return username
+
+
+async def get_current_account(token: str = Depends(oauth2_scheme)) -> Account:
+    users = read(username=check_account_session(token))
     if not users:
-        raise credentials_exception
+        raise CREDENTIAL_EXCEPTION
     return users[0]

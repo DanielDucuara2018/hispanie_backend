@@ -1,6 +1,7 @@
 from .account import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_account,
+    check_account_session,
     create_access_token,
     generate_expiration_time,
     get_current_account,
@@ -21,6 +22,7 @@ from .event import update as update_event
 __all__ = [
     "ACCESS_TOKEN_EXPIRE_MINUTES",
     "authenticate_account",
+    "check_account_session",
     "create_account",
     "create_business",
     "create_event",

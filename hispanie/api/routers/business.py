@@ -21,7 +21,7 @@ router = APIRouter(
 
 
 # Create Business
-@router.post("/", response_model=BusinessResponse)
+@router.post("", response_model=BusinessResponse)
 async def create(
     business_data: BusinessCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
@@ -36,7 +36,7 @@ async def create(
 
 
 # Read Business
-@router.get("/", response_model=List[BusinessResponse])
+@router.get("", response_model=List[BusinessResponse])
 async def read(
     current_account: AccountResponse = Depends(get_current_account),
 ):
