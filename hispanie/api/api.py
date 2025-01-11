@@ -36,9 +36,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3202"],
+    # allow_origins=["*"],
+    allow_origins=["https://app.hispanie.com", "http://app.hispanie.com", "http://localhost:3202"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST" "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -72,6 +73,11 @@ async def startup_event():
     logger.info("Account %s was just created with id %s", Config.account.username, account.id)
 
 
-@app.get("/api/v1")
-async def root():
-    return {"message": "Welcome to hispanie app"}
+@app.get(API_PREFIX)
+async def api():
+    return {"message": "Welcome to hispanie api app"}
+
+
+@app.get("/")
+async def healthcheck():
+    return {"message": "hispanie app alive"}
