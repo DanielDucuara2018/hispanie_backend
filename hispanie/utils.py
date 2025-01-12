@@ -31,7 +31,6 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
             if (authorization := request.headers.get("Authorization"))
             else (authorization := request.cookies.get(self.token_key_name))
         )
-        print(authorization)
 
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":

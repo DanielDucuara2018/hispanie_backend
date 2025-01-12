@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest
+from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
 
 from ...action import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -78,7 +79,14 @@ async def login(
         secure=False,  # Set True in production with HTTPS
         samesite=None,
     )
-    return {"message": "succefull login"}
+
+    return JSONResponse(
+        content=Token(
+            access_token=access_token,
+            token_type="bearer",
+            token_expiration_date=expiration_date,
+        ).model_dump(exclude_none=True)
+    )
 
 
 @router.post("/logout")
