@@ -47,7 +47,6 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 # TODO Add logging statements to capture important actions like user authentication and account creation.
 @router.post("/login")
 async def login(
-    response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     expiration_time: Annotated[
         int, Query(description="Set a value in minutes")
@@ -71,6 +70,15 @@ async def login(
         expiration_date=expiration_date,
     )
 
+    response = JSONResponse(
+        content=Token(
+            access_token=access_token,
+            token_type="bearer",
+            token_expiration_date=expiration_date,
+        ).model_dump(exclude_none=True),
+        status_code=status.HTTP_200_OK,
+    )
+
     response.set_cookie(
         key=TOKEN_KEY_NAME,
         value=f"Bearer {access_token}",
@@ -80,13 +88,7 @@ async def login(
         samesite=None,
     )
 
-    return JSONResponse(
-        content=Token(
-            access_token=access_token,
-            token_type="bearer",
-            token_expiration_date=expiration_date,
-        ).model_dump(exclude_none=True)
-    )
+    return response
 
 
 @router.post("/logout")
