@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest
+from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
 
 from ...action import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -46,7 +47,6 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 # TODO Add logging statements to capture important actions like user authentication and account creation.
 @router.post("/login")
 async def login(
-    response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     expiration_time: Annotated[
         int, Query(description="Set a value in minutes")
@@ -70,6 +70,15 @@ async def login(
         expiration_date=expiration_date,
     )
 
+    response = JSONResponse(
+        content=Token(
+            access_token=access_token,
+            token_type="bearer",
+            token_expiration_date=expiration_date,
+        ).model_dump(exclude_none=True),
+        status_code=status.HTTP_200_OK,
+    )
+
     response.set_cookie(
         key=TOKEN_KEY_NAME,
         value=f"Bearer {access_token}",
@@ -78,7 +87,8 @@ async def login(
         secure=False,  # Set True in production with HTTPS
         samesite=None,
     )
-    return {"message": "succefull login"}
+
+    return response
 
 
 @router.post("/logout")
