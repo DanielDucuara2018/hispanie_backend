@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 
 class File(Base, Resource):
-
     __tablename__ = "file"
 
     id: Mapped[str] = mapped_column(

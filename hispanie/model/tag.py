@@ -9,7 +9,6 @@ from .resource import Resource
 
 
 class Tag(Base, Resource):
-
     __tablename__ = "tag"
 
     id: Mapped[str] = mapped_column(
