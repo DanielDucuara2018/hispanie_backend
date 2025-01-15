@@ -1,8 +1,12 @@
-from typing import List
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from ..typing import CustomDateTime
+
+if TYPE_CHECKING:
+    from .business import BusinessResponse
+    from .event import EventResponse
 
 
 class TagCreateRequest(BaseModel):
@@ -30,17 +34,30 @@ class TagResponse(BaseModel):
     Schema for returning Tag data.
     """
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     description: str | None
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
-    events: List[str] = Field(
-        default_factory=list, description="List of event IDs associated with this tag."
+    events: list["EventResponse"] = Field(
+        default_factory=list, description="List of events associated with this tag."
     )
-    businesses: List[str] = Field(
-        default_factory=list, description="List of business IDs associated with this tag."
+    businesses: list["BusinessResponse"] = Field(
+        default_factory=list, description="List of business associated with this tag."
     )
 
-    class Config:
-        from_attributes = True
+
+class TagBasicResponse(BaseModel):
+    """
+    Schema for returning Tag basic data.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    description: str | None
+    creation_date: CustomDateTime
+    update_date: CustomDateTime | None
