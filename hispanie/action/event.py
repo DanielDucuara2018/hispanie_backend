@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 # Helper function for error handling
-def ensure_user_owns_event(current_account_id: int, event_owner_id: int) -> None:
+def ensure_user_owns_event(current_account_id: str, event_owner_id: int) -> None:
     """
     Raise an exception if the current account does not own the event.
     """
@@ -27,11 +27,10 @@ def create(event_data: EventCreateRequest, account_id: str) -> Event:
 def read(event_id: str | None = None, **kwargs) -> Event | list[Event]:
     if event_id:
         logger.info("Reading %s data", event_id)
-        result = Event.get(id=event_id)
+        return Event.get(id=event_id)
     else:
         logger.info("Reading all data")
-        result = Event.find(**kwargs)
-    return result
+        return Event.find(**kwargs)
 
 
 def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Event:

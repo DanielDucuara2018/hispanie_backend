@@ -1,6 +1,7 @@
 from .account import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
 from .business import BusinessCreateRequest, BusinessResponse, BusinessUpdateRequest
 from .event import EventCreateRequest, EventResponse, EventUpdateRequest
+from .tag import TagCreateRequest, TagResponse, TagUpdateRequest
 
 __all__ = [
     "AccountCreateRequest",
@@ -15,5 +16,8 @@ __all__ = [
     "EventCreateRequest",
     "EventResponse",
     "EventUpdateRequest",
+    "TagCreateRequest",
+    "TagResponse",
+    "TagUpdateRequest",
     "Token",
 ]
