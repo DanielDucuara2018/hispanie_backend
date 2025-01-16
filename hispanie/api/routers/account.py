@@ -9,6 +9,7 @@ from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdate
 from ...action import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_account,
+    check_account_session,
     create_access_token,
     create_account,
     delete_account,
@@ -98,6 +99,11 @@ async def logout(response: Response):
     """
     response.delete_cookie(key=TOKEN_KEY_NAME)
     return {"message": "succefull logout"}
+
+
+@router.get("/check-session")
+async def check_session(result: str = Depends(check_account_session)):
+    return result
 
 
 @router.post("/public/create", response_model=AccountResponse)
