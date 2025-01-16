@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import AccountType
 from ..typing import CustomDateTime
@@ -44,6 +44,8 @@ class AccountResponse(BaseModel):
     Schema for returning Account data.
     """
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     username: str
     email: EmailStr
@@ -51,6 +53,3 @@ class AccountResponse(BaseModel):
     description: str | None
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
-
-    class Config:
-        from_attributes = True

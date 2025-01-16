@@ -9,7 +9,6 @@ from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdate
 from ...action import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_account,
-    check_account_session,
     create_access_token,
     create_account,
     delete_account,
@@ -45,7 +44,7 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 # TODO Use Pydantic's advanced validation to enforce business rules, such as password complexity.
 # TODO Consider creating a separate set of admin endpoints under a different prefix (e.g., /admin/accounts) for better organization.
 # TODO Add logging statements to capture important actions like user authentication and account creation.
-@router.post("/login")
+@router.post("/public/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     expiration_time: Annotated[
@@ -91,7 +90,8 @@ async def login(
     return response
 
 
-@router.post("/logout")
+# TODO add token account validation
+@router.post("/private/logout")
 async def logout(response: Response):
     """
     log out an account and delete the cookies info.
@@ -100,12 +100,7 @@ async def logout(response: Response):
     return {"message": "succefull logout"}
 
 
-@router.get("/check-session")
-async def check_session(result: str = Depends(check_account_session)):
-    return result
-
-
-@router.post("", response_model=AccountResponse)
+@router.post("/public/create", response_model=AccountResponse)
 async def create(account_data: AccountCreateRequest) -> AccountResponse:
     """
     Create a new account with the provided data.
@@ -119,7 +114,7 @@ async def create(account_data: AccountCreateRequest) -> AccountResponse:
 
 
 # TODO add maybe a filter to get artists, users, and admin ?
-@router.get("", response_model=AccountResponse | list[AccountResponse])
+@router.get("/private/read", response_model=AccountResponse | list[AccountResponse])
 async def read(
     current_account: AccountResponse = Depends(get_current_account),
     show_all: Annotated[bool, Query(description="Set to true to list all users if admin")] = False,
@@ -136,7 +131,7 @@ async def read(
 
 # TODO check AccountCreateUpdateRequest because it could overide everything
 # TODO Use a separate endpoint for password updates to enhance security. Necessary ?
-@router.put("", response_model=AccountResponse)
+@router.put("/private/update", response_model=AccountResponse)
 async def update(
     account_data: AccountUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
@@ -152,7 +147,7 @@ async def update(
         )
 
 
-@router.delete("", response_model=AccountResponse)
+@router.delete("/private/delete", response_model=AccountResponse)
 async def delete(
     current_account: AccountResponse = Depends(get_current_account),
 ) -> AccountResponse:

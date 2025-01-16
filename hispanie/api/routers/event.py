@@ -12,8 +12,8 @@ router = APIRouter(
 )
 
 
-# Create Event
-@router.post("", response_model=EventResponse)
+# Create Event using token
+@router.post("/private/create", response_model=EventResponse)
 async def create(
     event_data: EventCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
@@ -27,9 +27,9 @@ async def create(
         raise HTTPException(status_code=400, detail=f"Error creating event: {str(e)}")
 
 
-# Read Events
-@router.get("", response_model=list[EventResponse])
-async def read(
+# Read Events using token
+@router.get("/private/read", response_model=list[EventResponse])
+async def read_private(
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
@@ -41,8 +41,20 @@ async def read(
         raise HTTPException(status_code=400, detail=f"Error retrieving events: {str(e)}")
 
 
+# Read Events using token
+@router.get("/public/read", response_model=list[EventResponse])
+async def read_public():
+    """
+    Retrieve all events for the authenticated account.
+    """
+    try:
+        return read_events(is_public=True)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error retrieving events: {str(e)}")
+
+
 # Update Event
-@router.put("/{event_id}", response_model=EventResponse)
+@router.put("/private/update/{event_id}", response_model=EventResponse)
 async def update(
     event_id: str,
     event_update: EventUpdateRequest,
@@ -58,7 +70,7 @@ async def update(
 
 
 # Delete Event
-@router.delete("/{event_id}", response_model=EventResponse)
+@router.delete("/private/delete/{event_id}", response_model=EventResponse)
 async def delete(
     event_id: str,
     current_account: AccountResponse = Depends(get_current_account),
