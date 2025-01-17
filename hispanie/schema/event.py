@@ -81,6 +81,7 @@ class EventResponse(BaseModel):
     name: str
     email: str | None
     phone: str | None
+    address: str
     city: str
     latitude: float
     longitude: float

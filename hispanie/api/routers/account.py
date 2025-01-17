@@ -101,7 +101,7 @@ async def logout(response: Response):
     return {"message": "succefull logout"}
 
 
-@router.get("/check-session")
+@router.get("/private/check-session")
 async def check_session(result: str = Depends(check_account_session)):
     return result
 
