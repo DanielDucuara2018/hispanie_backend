@@ -41,7 +41,7 @@ async def read_private(
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
-    Retrieve all business for the authenticated account.
+    Retrieve all public events
     """
     try:
         return read_businesses(account_id=current_account.id)
@@ -53,7 +53,7 @@ async def read_private(
 @router.get("/public/read", response_model=List[BusinessResponse])
 async def read_public():
     """
-    Retrieve all business for the authenticated account.
+    Retrieve all public business
     """
     try:
         return read_businesses(is_public=True)
