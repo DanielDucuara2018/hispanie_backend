@@ -22,7 +22,7 @@ CREDENTIAL_EXCEPTION = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
-oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/accounts/login")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/accounts/public/login")
 
 
 # create account
