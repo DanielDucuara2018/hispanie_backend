@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import BusinessCategory
 from ..typing import CustomDateTime
@@ -67,6 +67,8 @@ class BusinessResponse(BaseModel):
     Schema for returning Business data.
     """
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     email: str | None
@@ -86,6 +88,3 @@ class BusinessResponse(BaseModel):
     urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
-
-    class Config:
-        from_attributes = True

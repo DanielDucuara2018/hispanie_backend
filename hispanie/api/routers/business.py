@@ -20,8 +20,8 @@ router = APIRouter(
 )
 
 
-# Create Business
-@router.post("", response_model=BusinessResponse)
+# Create Business using token
+@router.post("/private/create", response_model=BusinessResponse)
 async def create(
     business_data: BusinessCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
@@ -35,13 +35,13 @@ async def create(
         raise HTTPException(status_code=400, detail=f"Error creating business: {str(e)}")
 
 
-# Read Business
-@router.get("", response_model=List[BusinessResponse])
-async def read(
+# Read Business using token
+@router.get("/private/read", response_model=List[BusinessResponse])
+async def read_private(
     current_account: AccountResponse = Depends(get_current_account),
 ):
     """
-    Retrieve all business for the authenticated account.
+    Retrieve all public events
     """
     try:
         return read_businesses(account_id=current_account.id)
@@ -49,8 +49,20 @@ async def read(
         raise HTTPException(status_code=400, detail=f"Error retrieving business: {str(e)}")
 
 
-# Update Business
-@router.put("/{event_id}", response_model=BusinessResponse)
+# Read Business
+@router.get("/public/read", response_model=List[BusinessResponse])
+async def read_public():
+    """
+    Retrieve all public business
+    """
+    try:
+        return read_businesses(is_public=True)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error retrieving business: {str(e)}")
+
+
+# Update Business using token
+@router.put("/private/update/{event_id}", response_model=BusinessResponse)
 async def update(
     business_id: str,
     business_update: BusinessUpdateRequest,
@@ -65,8 +77,8 @@ async def update(
         raise HTTPException(status_code=400, detail=f"Error updating event: {str(e)}")
 
 
-# Delete Business
-@router.delete("/{event_id}", response_model=BusinessResponse)
+# Delete Business using token
+@router.delete("/private/delete/{event_id}", response_model=BusinessResponse)
 async def delete(
     business_id: str,
     current_account: AccountResponse = Depends(get_current_account),

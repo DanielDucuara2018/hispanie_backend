@@ -50,7 +50,7 @@ def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
     else:
         logger.info("Reading all data")
         result = Account.find(**kwargs)
-    logger.info("Data found for account %s", account_id)
+    logger.info("Data found for account %s", account_id or kwargs)
     return result
 
 
