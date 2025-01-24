@@ -29,3 +29,21 @@ class NoUserFound(Error):
     code = 1001
     reason = "no-user-found"
     description = "No user found in DB."
+
+
+class NoBusinessFound(Error):
+    code = 1002
+    reason = "no-business-found"
+    description = "No tag found in DB."
+
+
+class NoEventFound(Error):
+    code = 1003
+    reason = "no-event-found"
+    description = "No tag found in DB."
+
+
+class NoTagFound(Error):
+    code = 1004
+    reason = "no-tag-found"
+    description = "No tag found in DB."

@@ -5,6 +5,7 @@ from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from ..errors import NoBusinessFound
 from ..utils import idv2
 from .base import Base
 from .entity import Entity
@@ -26,6 +27,7 @@ class BusinessCategory(Enum):
 
 class Business(Base, Entity):
     __tablename__ = "business"
+    __errors__ = {"_error": NoBusinessFound}
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: idv2("business", version=1)

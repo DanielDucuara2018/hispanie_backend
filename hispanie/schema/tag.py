@@ -1,6 +1,4 @@
-from typing import List
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from ..typing import CustomDateTime
 
@@ -30,17 +28,27 @@ class TagResponse(BaseModel):
     Schema for returning Tag data.
     """
 
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     description: str | None
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
-    events: List[str] = Field(
+    events_ids: list[str] = Field(
         default_factory=list, description="List of event IDs associated with this tag."
     )
-    businesses: List[str] = Field(
+    businesses_ids: list[str] = Field(
         default_factory=list, description="List of business IDs associated with this tag."
     )
 
-    class Config:
-        from_attributes = True
+
+class TagBasicResponse(BaseModel):
+    """
+    Schema for returning Tag basic data.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str

@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import EventCategory
 from ..typing import CustomDateTime
+from .tag import TagBasicResponse
 
 
 class EventCreateRequest(BaseModel):
@@ -13,7 +14,7 @@ class EventCreateRequest(BaseModel):
 
     name: str = Field(..., min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
-    phone: str | None = Field(None, pattern="^\+?[0-9\s-]+$", description="Valid phone number")
+    phone: str | None = Field(None, pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
     city: str = Field(..., min_length=2, max_length=50)
     address: str = Field(..., min_length=5, max_length=200)
     country: str = Field(..., min_length=2, max_length=50)
@@ -29,10 +30,10 @@ class EventCreateRequest(BaseModel):
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
     tags: list[str] | None = Field(
-        default_factory=list, description="List of tags associated with the event"
+        default_factory=list[str], description="List of tags associated with the event"
     )
     urls: list[str] | None = Field(
-        default_factory=list, description="List of URLs associated with the event"
+        default_factory=list[str], description="List of URLs associated with the event"
     )
 
 
@@ -43,7 +44,7 @@ class EventUpdateRequest(BaseModel):
 
     name: str | None = Field(None, min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
-    phone: str | None = Field(None, pattern="^\+?[0-9\s-]+$", description="Valid phone number")
+    phone: str | None = Field(None, pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
     address: str | None = Field(None, min_length=5, max_length=200)
     country: str | None = Field(None, min_length=2, max_length=50)
     municipality: str | None = Field(None, min_length=2, max_length=50)
@@ -91,7 +92,7 @@ class EventResponse(BaseModel):
     price: float
     start_date: CustomDateTime
     end_date: CustomDateTime
-    tags: list[str]
+    tags: list[TagBasicResponse]
     urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None

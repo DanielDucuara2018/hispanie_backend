@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import BusinessCategory
 from ..typing import CustomDateTime
+from .tag import TagBasicResponse
 
 
 class BusinessCreateRequest(BaseModel):
@@ -11,7 +12,7 @@ class BusinessCreateRequest(BaseModel):
 
     name: str = Field(..., min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
-    phone: str | None = Field(None, pattern="^\+?[0-9\s-]+$", description="Valid phone number")
+    phone: str | None = Field(None, pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
     address: str = Field(..., min_length=5, max_length=200)
     country: str = Field(..., min_length=2, max_length=50)
     municipality: str = Field(..., min_length=2, max_length=50)
@@ -24,10 +25,10 @@ class BusinessCreateRequest(BaseModel):
     category: BusinessCategory
     description: str | None = Field(None, min_length=5, max_length=1000)
     tags: list[str] | None = Field(
-        default_factory=list, description="List of tags associated with the event"
+        default_factory=list[str], description="List of tags associated with the event"
     )
     urls: list[str] | None = Field(
-        default_factory=list, description="List of URLs associated with the event"
+        default_factory=list[str], description="List of URLs associated with the event"
     )
 
 
@@ -38,7 +39,7 @@ class BusinessUpdateRequest(BaseModel):
 
     name: str | None = Field(None, min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
-    phone: str | None = Field(None, pattern="^\+?[0-9\s-]+$", description="Valid phone number")
+    phone: str | None = Field(None, pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
     address: str | None = Field(None, min_length=5, max_length=200)
     country: str | None = Field(None, min_length=2, max_length=50)
     municipality: str | None = Field(None, min_length=2, max_length=50)
@@ -52,13 +53,13 @@ class BusinessUpdateRequest(BaseModel):
         None, ge=-180.0, le=180.0, description="Longitude in decimal degrees"
     )
     is_public: bool | None = Field(None, description="Whether the business is public or not")
-    category: BusinessCategory | None
+    category: BusinessCategory | None = None
     description: str | None = Field(None, min_length=5, max_length=1000)
     tags: list[str] | None = Field(
-        default_factory=list, description="List of tags associated with the event"
+        default=None, description="List of tags associated with the event"
     )
     urls: list[str] | None = Field(
-        default_factory=list, description="List of URLs associated with the event"
+        default=None, description="List of URLs associated with the event"
     )
 
 
@@ -84,7 +85,7 @@ class BusinessResponse(BaseModel):
     is_public: bool
     category: BusinessCategory
     description: str | None
-    tags: list[str]
+    tags: list[TagBasicResponse]
     urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None

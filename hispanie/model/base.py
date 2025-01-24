@@ -6,13 +6,15 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 from hispanie import db
-from hispanie.errors import NoDataFound
+from hispanie.errors import Error, NoDataFound
 from hispanie.utils import to_list
 
 T = TypeVar("T", bound="Base")
 
 
 class Base(DeclarativeBase):
+    __errors__: dict[str, type[Error]] = {}
+
     @classmethod
     def find(
         cls: Type[T],
@@ -60,6 +62,8 @@ class Base(DeclarativeBase):
     def get(cls: Type[T], **kwargs) -> T:
         query = db.session.query(cls)
         if not (result := query.get(kwargs)):
+            if error := cls.__errors__.get("_error"):
+                raise error(**kwargs)
             raise NoDataFound(key=kwargs, messages="Not data found in DB")
         return result
 
