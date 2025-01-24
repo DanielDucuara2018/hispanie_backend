@@ -1,6 +1,8 @@
 from sqlalchemy import String
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from ..errors import NoTagFound
 from ..utils import idv2
 from .base import Base
 from .business import Business
@@ -10,6 +12,7 @@ from .resource import Resource
 
 class Tag(Base, Resource):
     __tablename__ = "tag"
+    __errors__ = {"_error": NoTagFound}
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: idv2("tag", version=1)
@@ -26,9 +29,13 @@ class Tag(Base, Resource):
         back_populates="tags",
     )
 
+    events_ids = association_proxy("events", "id")
+
     # Many-to-Many relationship with Business
     businesses: Mapped[list["Business"]] = relationship(
         "Business",
         secondary="business_tag",
         back_populates="tags",
     )
+
+    businesses_ids = association_proxy("businesses", "id")

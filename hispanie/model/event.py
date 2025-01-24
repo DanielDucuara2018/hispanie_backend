@@ -6,6 +6,7 @@ from sqlalchemy import DateTime, Float, ForeignKey, String
 from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from ..errors import NoEventFound
 from ..utils import idv2
 from .base import Base
 from .entity import Entity
@@ -31,6 +32,7 @@ class EventCategory(Enum):
 
 class Event(Base, Entity):
     __tablename__ = "event"
+    __errors__ = {"_error": NoEventFound}
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: idv2("event", version=1)
