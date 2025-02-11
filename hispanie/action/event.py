@@ -1,19 +1,12 @@
 import logging
 
-from ..model import Event, Tag
+from ..model import Event, File, Tag
 from ..schema import EventCreateRequest, EventUpdateRequest
+from ..utils import ensure_user_owns_resource
 from .account import read as read_accounts
+from .tag import read as read_tags
 
 logger = logging.getLogger(__name__)
-
-
-# Helper function for error handling
-def ensure_user_owns_event(current_account_id: str, event_owner_id: int) -> None:
-    """
-    Raise an exception if the current account does not own the event.
-    """
-    if current_account_id != event_owner_id:
-        raise Exception("You do not have permission to access this event.")
 
 
 def create(event_data: EventCreateRequest, account_id: str) -> Event:
@@ -21,8 +14,9 @@ def create(event_data: EventCreateRequest, account_id: str) -> Event:
     data = event_data.model_dump()
     logger.info("Adding new event: %s", data)
     # Format and check tags
-    tags = [Tag.get(id=t) for t in data.pop("tags")]
-    event = Event(account=account, tags=tags, **data).create()
+    files = [File(account=account, **file).create() for file in data.pop("files")]
+    tags = read_tags(id=[tag["id"] for tag in data.pop("tags")])
+    event = Event(account=account, tags=tags, files=files, **data).create()
     logger.info("Added new event: %s", event.id)
     return event
 
@@ -38,7 +32,7 @@ def read(event_id: str | None = None, **kwargs) -> Event | list[Event]:
 
 def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Event:
     event = Event.get(id=event_id)
-    ensure_user_owns_event(account_id, event.account_id)
+    ensure_user_owns_resource(account_id, event.account_id)
     data = event_data.model_dump(exclude_none=True)
     logger.info("Updating event: %s with %s", event_id, data)
     # Format and check tags
@@ -52,7 +46,7 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
 def delete(event_id: str, account_id: str) -> Event:
     logger.info("Deleting event: %s", event_id)
     event = Event.get(id=event_id)
-    ensure_user_owns_event(account_id, event.account_id)
+    ensure_user_owns_resource(account_id, event.account_id)
     result = event.delete()
     logger.info("Deleted event: %s", event_id)
     return result

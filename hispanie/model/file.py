@@ -1,5 +1,7 @@
+from enum import Enum
 from typing import TYPE_CHECKING
 
+from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -13,16 +15,25 @@ if TYPE_CHECKING:
     from .account import Account
 
 
+class FileCategory(Enum):
+    PROFILE_IMAGE = "profile_image"
+    COVER_IMAGE = "cover_image"
+
+
 class File(Base, Resource):
     __tablename__ = "file"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: idv2("event", version=1)
+        String, primary_key=True, default=lambda: idv2("file", version=1)
     )
 
-    path: Mapped[str] = mapped_column(String, nullable=False)
+    filename: Mapped[str] = mapped_column(String, nullable=False)
 
-    # TODO Add a type to know where the file is gonna be shown ? ex: profile
+    content_type: Mapped[str] = mapped_column(String, nullable=False)
+
+    category: Mapped[FileCategory] = mapped_column(SQLAEnum(FileCategory), nullable=False)
+
+    path: Mapped[str] = mapped_column(String, nullable=False)
 
     # foreign key
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))

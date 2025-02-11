@@ -56,6 +56,15 @@ def check_password_hash(hashed_password: bytes, input_password: str) -> bool:
     return bcrypt.checkpw(input_password.encode("utf-8"), hashed_password)
 
 
+# Helper function for error handling
+def ensure_user_owns_resource(current_account_id: str, resource_owner_id: int) -> None:
+    """
+    Raise an exception if the current account does not own the resource.
+    """
+    if current_account_id != resource_owner_id:
+        raise Exception("You do not have permission to access this resource.")
+
+
 def to_list(value: Any) -> list[Any]:
     if value is None:
         return []
