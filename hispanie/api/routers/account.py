@@ -107,7 +107,9 @@ async def check_session(result: str = Depends(check_account_session)):
 
 
 @router.post("/public/create", response_model=AccountResponse)
-async def create(account_data: AccountCreateRequest) -> AccountResponse:
+async def create(
+    account_data: AccountCreateRequest,  # _: None = Depends(get_current_account)
+) -> AccountResponse:
     """
     Create a new account with the provided data.
     """

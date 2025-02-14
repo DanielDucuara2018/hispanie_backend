@@ -18,6 +18,11 @@ from .event import create as create_event
 from .event import delete as delete_event
 from .event import read as read_events
 from .event import update as update_event
+from .file import create as create_file
+from .file import delete as delete_file
+from .file import generate_download_presigned_url, generate_upload_presigned_url
+from .file import read as read_files
+from .file import update as update_file
 from .tag import create as create_tag
 from .tag import delete as delete_tag
 from .tag import read as read_tags
@@ -30,20 +35,26 @@ __all__ = [
     "create_account",
     "create_business",
     "create_event",
+    "create_file",
     "create_tag",
     "create_access_token",
     "delete_account",
     "delete_business",
     "delete_event",
+    "delete_file",
     "delete_tag",
     "generate_expiration_time",
+    "generate_upload_presigned_url",
+    "generate_download_presigned_url",
     "get_current_account",
     "read_accounts",
     "read_businesses",
     "read_events",
+    "read_files",
     "read_tags",
     "update_account",
     "update_business",
     "update_event",
+    "update_file",
     "update_tag",
 ]
