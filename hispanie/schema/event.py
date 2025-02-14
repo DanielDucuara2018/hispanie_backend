@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import EventCategory
 from ..typing import CustomDateTime
-from .file import FileCreateRequest, FileResponse
+from .file import FileBasicResponse, FileCreateRequest
 from .tag import TagBasicResponse
 
 
@@ -31,13 +31,14 @@ class EventCreateRequest(BaseModel):
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
     files: list[FileCreateRequest] = Field(
-        default_factory=list[FileCreateRequest], description="List of tags associated with the event"
+        default_factory=list[FileCreateRequest],
+        description="List of tags associated with the event",
     )
     tags: list[TagBasicResponse] = Field(
         default_factory=list[TagBasicResponse], description="List of tags associated with the event"
     )
     urls: list[str] = Field(
-        default_factory=list, description="List of URLs associated with the event"
+        default_factory=list[str], description="List of URLs associated with the event"
     )
 
 
@@ -99,7 +100,7 @@ class EventResponse(BaseModel):
     price: float
     start_date: CustomDateTime
     end_date: CustomDateTime
-    files: list[FileResponse]
+    files: list[FileBasicResponse]
     tags: list[TagBasicResponse]
     urls: list[str]
     creation_date: CustomDateTime

@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import BusinessCategory
 from ..typing import CustomDateTime
-from .file import FileCreateRequest, FileResponse
+from .file import FileBasicResponse, FileCreateRequest
 from .tag import TagBasicResponse
 
 
@@ -26,7 +26,8 @@ class BusinessCreateRequest(BaseModel):
     category: BusinessCategory
     description: str | None = Field(None, min_length=5, max_length=1000)
     files: list[FileCreateRequest] = Field(
-        default_factory=list[FileCreateRequest], description="List of tags associated with the event"
+        default_factory=list[FileCreateRequest],
+        description="List of tags associated with the event",
     )
     tags: list[TagBasicResponse] | None = Field(
         default_factory=list[TagBasicResponse], description="List of tags associated with the event"
@@ -92,7 +93,7 @@ class BusinessResponse(BaseModel):
     is_public: bool
     category: BusinessCategory
     description: str | None
-    files: list[FileResponse]
+    files: list[FileBasicResponse]
     tags: list[TagBasicResponse]
     urls: list[str]
     creation_date: CustomDateTime

@@ -1,7 +1,13 @@
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..model.file import FileCategory
 from ..typing import CustomDateTime
+
+if TYPE_CHECKING:
+    from .business import BusinessResponse
+    from .event import EventResponse
 
 
 class FileGeneratePresignedUrlResponse(BaseModel):
@@ -48,7 +54,28 @@ class FileResponse(BaseModel):
     path: str
     content_type: str
     category: FileCategory
-    path: str
     description: str | None
+    creation_date: CustomDateTime
+    update_date: CustomDateTime | None
+    events: list["EventResponse"] = Field(
+        default_factory=list["EventResponse"],
+        description="List of events associated with this tag.",
+    )
+    businesses: list["BusinessResponse"] = Field(
+        default_factory=list["BusinessResponse"],
+        description="List of business associated with this tag.",
+    )
+
+
+class FileBasicResponse(BaseModel):
+    """
+    Schema for returning File data.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    path: str
+    category: FileCategory
     creation_date: CustomDateTime
     update_date: CustomDateTime | None

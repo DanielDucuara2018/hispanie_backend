@@ -1,6 +1,6 @@
 import logging
 
-from ..model import Business, File, Tag
+from ..model import Business, File
 from ..schema import BusinessCreateRequest, BusinessUpdateRequest
 from ..utils import ensure_user_owns_resource
 from .account import read as read_accounts
@@ -13,11 +13,10 @@ def create(business_data: BusinessCreateRequest, account_id: str) -> Business:
     account = read_accounts(account_id)
     data = business_data.model_dump()
     logger.info("Adding new business: %s", data)
-
+    # Format and check tags and files
     files = [File(account=account, **file).create() for file in data.pop("files")]
     tags = read_tags(id=[t["id"] for t in data.pop("tags")])
-
-    business = Business(account=account, tags=tags, files=files **data).create()
+    business = Business(account=account, tags=tags, files=files, **data).create()
     logger.info("Added new business %s", business.id)
     return business
 
