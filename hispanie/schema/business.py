@@ -27,7 +27,7 @@ class BusinessCreateRequest(BaseModel):
     description: str | None = Field(None, min_length=5, max_length=1000)
     files: list[FileCreateRequest] = Field(
         default_factory=list[FileCreateRequest],
-        description="List of tags associated with the event",
+        description="List of files associated with the event",
     )
     tags: list[TagBasicResponse] | None = Field(
         default_factory=list[TagBasicResponse], description="List of tags associated with the event"
@@ -61,7 +61,7 @@ class BusinessUpdateRequest(BaseModel):
     category: BusinessCategory | None = None
     description: str | None = Field(None, min_length=5, max_length=1000)
     files: list[FileCreateRequest] | None = Field(
-        default_factory=None, description="List of tags associated with the event"
+        default_factory=None, description="List of files associated with the event"
     )
     tags: list[TagBasicResponse] | None = Field(
         default_factory=None, description="List of tags associated with the event"

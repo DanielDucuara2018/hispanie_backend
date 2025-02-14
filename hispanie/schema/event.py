@@ -32,7 +32,7 @@ class EventCreateRequest(BaseModel):
     end_date: datetime = Field(..., description="End date of the event")
     files: list[FileCreateRequest] = Field(
         default_factory=list[FileCreateRequest],
-        description="List of tags associated with the event",
+        description="List of files associated with the event",
     )
     tags: list[TagBasicResponse] = Field(
         default_factory=list[TagBasicResponse], description="List of tags associated with the event"
@@ -69,7 +69,7 @@ class EventUpdateRequest(BaseModel):
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
     files: list[FileCreateRequest] | None = Field(
-        default_factory=None, description="List of tags associated with the event"
+        default_factory=None, description="List of files associated with the event"
     )
     tags: list[TagBasicResponse] | None = Field(
         default=None, description="List of tags associated with the event"
