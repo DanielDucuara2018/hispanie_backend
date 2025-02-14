@@ -1,6 +1,6 @@
 import logging
 
-from ..model import Event
+from ..model import Event, Tag
 from ..schema import EventCreateRequest, EventUpdateRequest
 from .account import read as read_accounts
 
@@ -17,35 +17,42 @@ def ensure_user_owns_event(current_account_id: str, event_owner_id: int) -> None
 
 
 def create(event_data: EventCreateRequest, account_id: str) -> Event:
-    logger.info("Adding new event %s", event_data)
     account = read_accounts(account_id)
-    event = Event(account=account, **event_data.model_dump()).create()
-    logger.info("Added new event %s", event.id)
+    data = event_data.model_dump()
+    logger.info("Adding new event: %s", data)
+    # Format and check tags
+    tags = [Tag.get(id=t) for t in data.pop("tags")]
+    event = Event(account=account, tags=tags, **data).create()
+    logger.info("Added new event: %s", event.id)
     return event
 
 
 def read(event_id: str | None = None, **kwargs) -> Event | list[Event]:
     if event_id:
-        logger.info("Reading %s data", event_id)
+        logger.info("Reading event: %s", event_id)
         return Event.get(id=event_id)
     else:
-        logger.info("Reading all data")
+        logger.info("Reading all events")
         return Event.find(**kwargs)
 
 
 def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Event:
-    logger.info("Updating %s event", event_id)
     event = Event.get(id=event_id)
     ensure_user_owns_event(account_id, event.account_id)
-    result = event.update(**event_data.model_dump(exclude_none=True))
-    logger.info("Updated event %s", event_id)
+    data = event_data.model_dump(exclude_none=True)
+    logger.info("Updating event: %s with %s", event_id, data)
+    # Format and check tags
+    if tags := data.pop("tags", []):
+        data["tags"] = [Tag.get(id=t) for t in tags]
+    result = event.update(**data)
+    logger.info("Updated event: %s", event_id)
     return result
 
 
 def delete(event_id: str, account_id: str) -> Event:
-    logger.info("Deleting %s event", event_id)
+    logger.info("Deleting event: %s", event_id)
     event = Event.get(id=event_id)
     ensure_user_owns_event(account_id, event.account_id)
     result = event.delete()
-    logger.info("Deleted event %s", event_id)
+    logger.info("Deleted event: %s", event_id)
     return result
