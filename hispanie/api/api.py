@@ -7,6 +7,7 @@ from ..db import initialize
 from .routers.account import router as account_router
 from .routers.business import router as business_router
 from .routers.event import router as event_router
+from .routers.file import router as file_router
 from .routers.tag import router as tag_router
 
 logging.basicConfig(
@@ -41,8 +42,9 @@ app.add_middleware(
 )
 
 app.include_router(account_router, prefix=API_PREFIX)
-app.include_router(event_router, prefix=API_PREFIX)
 app.include_router(business_router, prefix=API_PREFIX)
+app.include_router(event_router, prefix=API_PREFIX)
+app.include_router(file_router, prefix=API_PREFIX)
 app.include_router(tag_router, prefix=API_PREFIX)
 
 

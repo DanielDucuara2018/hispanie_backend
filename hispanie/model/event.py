@@ -23,11 +23,11 @@ class EventCategory(Enum):
     CINEMA = "cinema"
     CONCERT = "concert"
     PARTY = "party"
-    # expositions
-    # language exchange
-    # teatro
-    # gastronomy
-    # Dance
+    EXPOSITION = "exposition"
+    LANGUAGE_EXCHANGE = "language_exchange"
+    THEATER = "theater"
+    GASTRONOMY = "gastronomy"
+    DANCE = "dance"
 
 
 class Event(Base, Entity):

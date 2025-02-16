@@ -21,6 +21,7 @@ class BusinessCategory(Enum):
     RESTAURANT = "restaurant"
     CAFE = "cafe"
     BOUTIQUE = "boutique"
+    EXPOSITION = "exposition"
     ASSOCIATION = "association"
     ACADEMY = "academy"
 
