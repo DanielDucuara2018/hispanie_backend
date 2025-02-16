@@ -1,13 +1,7 @@
-from typing import TYPE_CHECKING
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..model.file import FileCategory
 from ..typing import CustomDateTime
-
-if TYPE_CHECKING:
-    from .business import BusinessResponse
-    from .event import EventResponse
 
 
 class FileGeneratePresignedUrlResponse(BaseModel):
@@ -38,7 +32,7 @@ class FileUpdateRequest(BaseModel):
     filename: str | None = Field(None, min_length=3, max_length=100)
     content_type: str | None = Field(None, min_length=3, max_length=100)
     category: FileCategory | None
-    path: str = Field(None, min_length=3, max_length=1000)
+    path: str | None = Field(None, min_length=3, max_length=1000)
     description: str | None = Field(None, min_length=5, max_length=1000)
 
 
@@ -79,3 +73,7 @@ class FileBasicResponse(BaseModel):
     category: FileCategory
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
+
+
+from .business import BusinessResponse  # noqa: E402
+from .event import EventResponse  # noqa: E402
