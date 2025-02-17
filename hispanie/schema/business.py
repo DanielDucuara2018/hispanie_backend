@@ -2,8 +2,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import BusinessCategory
 from ..typing import CustomDateTime
-from .file import FileBasicResponse, FileCreateRequest
-from .tag import TagBasicResponse
 
 
 class BusinessCreateRequest(BaseModel):
@@ -25,12 +23,13 @@ class BusinessCreateRequest(BaseModel):
     is_public: bool = Field(default=False, description="Whether the business is public or not")
     category: BusinessCategory
     description: str | None = Field(None, min_length=5, max_length=1000)
-    files: list[FileCreateRequest] = Field(
-        default_factory=list[FileCreateRequest],
+    files: list["FileCreateRequest"] = Field(
+        default_factory=list["FileCreateRequest"],
         description="List of files associated with the event",
     )
-    tags: list[TagBasicResponse] | None = Field(
-        default_factory=list[TagBasicResponse], description="List of tags associated with the event"
+    tags: list["TagBasicResponse"] | None = Field(
+        default_factory=list["TagBasicResponse"],
+        description="List of tags associated with the event",
     )
     urls: list[str] | None = Field(
         default_factory=list[str], description="List of URLs associated with the event"
@@ -60,11 +59,11 @@ class BusinessUpdateRequest(BaseModel):
     is_public: bool | None = Field(None, description="Whether the business is public or not")
     category: BusinessCategory | None = None
     description: str | None = Field(None, min_length=5, max_length=1000)
-    files: list[FileCreateRequest] | None = Field(
-        default_factory=None, description="List of files associated with the event"
+    files: list["FileCreateRequest"] | None = Field(
+        default=None, description="List of files associated with the event"
     )
-    tags: list[TagBasicResponse] | None = Field(
-        default_factory=None, description="List of tags associated with the event"
+    tags: list["TagBasicResponse"] | None = Field(
+        default=None, description="List of tags associated with the event"
     )
     urls: list[str] | None = Field(
         default=None, description="List of URLs associated with the event"
@@ -93,8 +92,12 @@ class BusinessResponse(BaseModel):
     is_public: bool
     category: BusinessCategory
     description: str | None
-    files: list[FileBasicResponse]
-    tags: list[TagBasicResponse]
+    files: list["FileBasicResponse"]
+    tags: list["TagBasicResponse"]
     urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
+
+
+from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
+from .tag import TagBasicResponse  # noqa: E402

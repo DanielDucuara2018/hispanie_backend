@@ -4,8 +4,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from ..model import EventCategory
 from ..typing import CustomDateTime
-from .file import FileBasicResponse, FileCreateRequest
-from .tag import TagBasicResponse
 
 
 class EventCreateRequest(BaseModel):
@@ -30,12 +28,13 @@ class EventCreateRequest(BaseModel):
     price: float = Field(..., ge=0.0, description="Price of the event")
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
-    files: list[FileCreateRequest] = Field(
-        default_factory=list[FileCreateRequest],
+    files: list["FileCreateRequest"] = Field(
+        default_factory=list["FileCreateRequest"],
         description="List of files associated with the event",
     )
-    tags: list[TagBasicResponse] = Field(
-        default_factory=list[TagBasicResponse], description="List of tags associated with the event"
+    tags: list["TagBasicResponse"] = Field(
+        default_factory=list["TagBasicResponse"],
+        description="List of tags associated with the event",
     )
     urls: list[str] = Field(
         default_factory=list[str], description="List of URLs associated with the event"
@@ -68,10 +67,10 @@ class EventUpdateRequest(BaseModel):
     price: float | None = Field(None, ge=0.0, description="Price of the event")
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
-    files: list[FileCreateRequest] | None = Field(
-        default_factory=None, description="List of files associated with the event"
+    files: list["FileCreateRequest"] | None = Field(
+        default=None, description="List of files associated with the event"
     )
-    tags: list[TagBasicResponse] | None = Field(
+    tags: list["TagBasicResponse"] | None = Field(
         default=None, description="List of tags associated with the event"
     )
     urls: list[str] | None = Field(
@@ -100,8 +99,12 @@ class EventResponse(BaseModel):
     price: float
     start_date: CustomDateTime
     end_date: CustomDateTime
-    files: list[FileBasicResponse]
-    tags: list[TagBasicResponse]
+    files: list["FileBasicResponse"]
+    tags: list["TagBasicResponse"]
     urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
+
+
+from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
+from .tag import TagBasicResponse  # noqa: E402

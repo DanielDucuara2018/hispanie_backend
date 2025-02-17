@@ -1,12 +1,6 @@
-from typing import TYPE_CHECKING
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..typing import CustomDateTime
-
-if TYPE_CHECKING:
-    from .business import BusinessResponse
-    from .event import EventResponse
 
 
 class TagCreateRequest(BaseModel):
@@ -61,3 +55,7 @@ class TagBasicResponse(BaseModel):
     description: str | None
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
+
+
+from .business import BusinessResponse  # noqa: E402
+from .event import EventResponse  # noqa: E402
