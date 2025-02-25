@@ -23,10 +23,10 @@ EMAIL_CONFIG = ConnectionConfig(
     MAIL_PORT=int(Config.email.port),
     MAIL_SERVER=Config.email.server,
     MAIL_FROM_NAME=Config.email.name,
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False,
-    USE_CREDENTIALS=True,
-    VALIDATE_CERTS=True,
+    MAIL_STARTTLS=bool(int(Config.email.start_tls)),
+    MAIL_SSL_TLS=bool(int(Config.email.ssl_tls)),
+    USE_CREDENTIALS=bool(int(Config.email.credentials)),
+    VALIDATE_CERTS=bool(int(Config.email.validate_certs)),
 )
 
 CREDENTIAL_EXCEPTION = HTTPException(
