@@ -1,10 +1,7 @@
-import configparser
 import logging
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from apischema import deserialize
 from sqlalchemy.engine import create_engine
 from sqlalchemy.engine.base import Connection, Engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -15,28 +12,12 @@ from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from hispanie.model import Base
 
-logger = logging.getLogger(__name__)
-# logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+from .config import Database
 
-ROOT = Path(__file__).parent.parent.resolve()
+ROOT = Path(__file__).parents[1]
 ALEMBIC_PATH = ROOT.joinpath("alembic")
 
-
-@dataclass
-class Database:
-    database: str
-    host: str
-    password: str
-    port: str
-    user: str
-    ref_table: str
-
-
-def load_database_info(path: Path = ROOT.joinpath("hispanie.ini")) -> Database:
-    logger.info("loading postgres configuration from file %s", path)
-    Config = configparser.ConfigParser()
-    Config.read(path)
-    return deserialize(Database, Config._sections["database"])
+logger = logging.getLogger(__name__)
 
 
 def get_engine(db: Database, suffix: Optional[str] = None) -> Engine:
@@ -52,9 +33,10 @@ def check_db_connection(db: Database) -> None:
 
 
 def init() -> sessionmaker:
-    logger.info("Initialising postgres connection")
-    db = load_database_info()
-    engine = get_engine(db)
+    from .config import Config
+
+    logger.info("Initialising postgres connection %s")
+    engine = get_engine(Config.database)
     return sessionmaker(bind=engine)
 
 
@@ -112,17 +94,18 @@ def update(conn: Connection, table_name: str, dry_run: bool = False):
 
 
 def initialize(update_schema: bool = False) -> None:
-    db = load_database_info()
+    from .config import Config
+
     logger.info("Checking database connection")
-    check_db_connection(db)
+    check_db_connection(Config.database)
     logger.info("Checking alembic migrations")
-    engine = get_engine(db, suffix="?target_session_attrs=read-write")
+    engine = get_engine(Config.database, suffix="?target_session_attrs=read-write")
 
     exists = True
     try:
         with engine.connect() as conn:
             with conn.begin_nested():
-                conn.execute(f"""SELECT 1 FROM {db.ref_table} LIMIT 1""")
+                conn.execute(f"""SELECT 1 FROM {Config.database.ref_table} LIMIT 1""")
     except Exception:  # TODO find the right exception
         exists = False
 

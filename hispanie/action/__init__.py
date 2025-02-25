@@ -1,10 +1,11 @@
 from .account import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_account,
     check_account_session,
     create_access_token,
     generate_expiration_time,
     get_current_account,
+    handle_forgotten_password,
+    handle_reset_password,
 )
 from .account import create as create_account
 from .account import delete as delete_account
@@ -47,11 +48,13 @@ __all__ = [
     "generate_upload_presigned_url",
     "generate_download_presigned_url",
     "get_current_account",
+    "handle_forgotten_password",
     "read_accounts",
     "read_businesses",
     "read_events",
     "read_files",
     "read_tags",
+    "handle_reset_password",
     "update_account",
     "update_business",
     "update_event",

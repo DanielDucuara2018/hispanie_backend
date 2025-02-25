@@ -1,23 +1,40 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Cookie,
+    Depends,
+    HTTPException,
+    Query,
+    Response,
+    status,
+)
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import AccountCreateRequest, AccountResponse, AccountUpdateRequest, Token
+from hispanie.schema import (
+    AccountCreateRequest,
+    AccountResponse,
+    AccountUpdateRequest,
+    PasswordResetConfirm,
+    PasswordResetRequest,
+    Token,
+)
 
 from ...action import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_account,
-    check_account_session,
     create_access_token,
     create_account,
     delete_account,
     generate_expiration_time,
     get_current_account,
+    handle_forgotten_password,
+    handle_reset_password,
     read_accounts,
     update_account,
 )
+from ...config import Config
 from ...model.account import AccountType
 from ...utils import TOKEN_KEY_NAME
 
@@ -48,9 +65,9 @@ def ensure_admin_privileges(current_account: AccountResponse) -> None:
 @router.post("/public/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    expiration_time: Annotated[
-        int, Query(description="Set a value in minutes")
-    ] = ACCESS_TOKEN_EXPIRE_MINUTES,
+    expiration_time: Annotated[int, Query(description="Set a value in minutes")] = int(
+        Config.jwt.access_token_expire_minutes
+    ),
     refresh_token_id: str | None = Cookie(None),
 ):
     """
@@ -93,7 +110,7 @@ async def login(
 
 # TODO add token account validation
 @router.post("/private/logout")
-async def logout(response: Response):
+async def logout(response: Response, _: None = Depends(get_current_account)):
     """
     log out an account and delete the cookies info.
     """
@@ -101,9 +118,42 @@ async def logout(response: Response):
     return {"message": "succefull logout"}
 
 
-@router.get("/private/check-session")
-async def check_session(result: str = Depends(check_account_session)):
-    return result
+# @router.get("/private/check_session")
+# async def check_session(result: str = Depends(check_account_session)):
+#     return result
+
+
+@router.post("/public/forgot_password")
+async def forgot_password(
+    request: PasswordResetRequest,
+    background_tasks: BackgroundTasks,
+):
+    """
+    Handle forgotten password request for a given account
+    """
+    try:
+        handle_forgotten_password(request.email, background_tasks)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error handling forgotten password: {e}",
+        )
+
+
+@router.post("/public/reset_password")
+async def reset_password(
+    request: PasswordResetConfirm,
+):
+    """
+    Handle reset password request for a given account
+    """
+    try:
+        return handle_reset_password(**request.model_dump(exclude_none=True))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error handling forgotten password: {e}",
+        )
 
 
 @router.post("/public/create", response_model=AccountResponse)

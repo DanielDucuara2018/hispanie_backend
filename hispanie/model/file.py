@@ -35,6 +35,8 @@ class File(Base, Resource):
 
     path: Mapped[str] = mapped_column(String, nullable=False)
 
+    hash: Mapped[str] = mapped_column(String, nullable=False)
+
     # foreign key
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
 

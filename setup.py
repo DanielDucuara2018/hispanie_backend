@@ -11,6 +11,8 @@ INSTALL_REQUIRES = [
     "bcrypt>=4.2.1",
     "boto3>=1.36.13",
     "fastapi[all]>=0.115.5",
+    "fastapi_mail>=1.4.2",
+    "itsdangerous>=2.2.0",
     # "fastapi-utils",
     "psycopg2-binary>=2.9.10",
     "python-jose[cryptography]==3.3.0",
