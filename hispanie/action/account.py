@@ -1,10 +1,13 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Depends, HTTPException, status
+from fastapi import BackgroundTasks, Depends, HTTPException, status
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
+from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
 
-from ..model import Account, AccountType
+from ..config import Config
+from ..model import Account, AccountType, ResetToken
 from ..schema import AccountCreateRequest, AccountUpdateRequest
 from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash
 
@@ -12,15 +15,26 @@ logger = logging.getLogger(__name__)
 
 # to get a string like this run:
 # openssl rand -hex 32 TODO Store better these variables
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+EMAIL_CONFIG = ConnectionConfig(
+    MAIL_USERNAME=Config.email.username,
+    MAIL_PASSWORD=Config.email.password,
+    MAIL_FROM=Config.email.address,
+    MAIL_PORT=int(Config.email.port),
+    MAIL_SERVER=Config.email.server,
+    MAIL_FROM_NAME=Config.email.name,
+    MAIL_STARTTLS=bool(int(Config.email.start_tls)),
+    MAIL_SSL_TLS=bool(int(Config.email.ssl_tls)),
+    USE_CREDENTIALS=bool(int(Config.email.credentials)),
+    VALIDATE_CERTS=bool(int(Config.email.validate_certs)),
+)
 
 CREDENTIAL_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
 )
+
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/accounts/public/login")
 
@@ -85,25 +99,25 @@ def authenticate_account(username: str, password: str) -> Account | None:
     return None
 
 
-def generate_expiration_time(delta: int) -> datetime:
-    return datetime.now(timezone.utc) + timedelta(minutes=delta)
-
-
 # create account access token
 
 
 def create_access_token(data: dict, expiration_date: datetime) -> str:
     to_encode = data.copy()
     to_encode.update({"exp": expiration_date})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, Config.jwt.secret_key, algorithm=Config.jwt.algorithm)
+
+
+def generate_expiration_time(delta: int) -> datetime:
+    return datetime.now(timezone.utc) + timedelta(minutes=delta)
 
 
 # get account for authentification
 
 
-def check_account_session(token: str = Depends(oauth2_scheme)) -> str:
+async def check_account_session(token: str = Depends(oauth2_scheme)) -> str:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, Config.jwt.secret_key, algorithms=[Config.jwt.algorithm])
     except JWTError:
         raise CREDENTIAL_EXCEPTION
 
@@ -114,7 +128,93 @@ def check_account_session(token: str = Depends(oauth2_scheme)) -> str:
 
 
 async def get_current_account(token: str = Depends(oauth2_scheme)) -> Account:
-    users = read(username=check_account_session(token))
-    if not users:
+    accounts = read(username=await check_account_session(token))
+    if not accounts:
         raise CREDENTIAL_EXCEPTION
-    return users[0]
+    return accounts[0]
+
+
+# handle password forgotten
+
+
+def handle_forgotten_password(email: str, background_tasks: BackgroundTasks) -> None:
+    logger.info("Processing forgotten password request")
+    accounts = read(email=email)
+    if not accounts:
+        raise HTTPException(status_code=404, detail="account not found")
+
+    account = accounts[0]
+    reset_token = create_reset_token(account.email)
+    background_tasks.add_task(send_reset_email, account, reset_token)
+    logger.info("Preparing email for account %s to email %s", account.id, account.email)
+
+
+def handle_reset_password(token: str, old_password: str, new_password: str) -> None:
+    logger.info("Reseting password")
+
+    is_used = is_reset_token_used(token)
+    if is_used:
+        raise HTTPException(status_code=400, detail="This token was already used")
+
+    email = verify_reset_token(token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    accounts = read(email=email)
+    if not accounts:
+        raise HTTPException(status_code=404, detail="account not found")
+
+    account = accounts[0]
+    account = authenticate_account(account.username, old_password)
+
+    result = account.update(password=new_password)
+    logger.info("Reseted password for account %s", result.id)
+    set_reset_token_as_used(token)
+
+
+async def send_reset_email(account: Account, token: str) -> None:
+    logger.info("Sending email to %s", account.email)
+    reset_url = f"{Config.email.frontend_url}/reset_password?token={token}"
+    message = MessageSchema(
+        subject="Password Reset Request",
+        recipients=[account.email],
+        body=f"Please click the following link to reset your password: {reset_url}",
+        subtype="html",
+    )
+    fm = FastMail(EMAIL_CONFIG)
+    await fm.send_message(message)
+    logger.info("Email sent to %s", account.email)
+    save_reset_token(account, token)
+
+
+def save_reset_token(account: Account, token: str) -> None:
+    [reset_token.update(used=True) for reset_token in account.reset_tokens]
+    logger.info("Saving reset token in DB")
+    ResetToken(id=token, account=account).create()
+    logger.info("Saved reset token in DB")
+
+
+def is_reset_token_used(token: str) -> bool:
+    logger.info("Validating if reset token was used")
+    reset_token = ResetToken.get(id=token)
+    logger.info("Reset token status used = %s", reset_token.used)
+    return reset_token.used
+
+
+def set_reset_token_as_used(token: str) -> None:
+    logger.info("Set reset token as used")
+    reset_token = ResetToken.get(id=token).update(used=True)
+    logger.info("Reset token status used = %s", reset_token.used)
+
+
+def create_reset_token(email: str) -> str:
+    serializer = URLSafeTimedSerializer(Config.email.secret_key)
+    return serializer.dumps(email, salt=Config.email.security_password_salt)
+
+
+def verify_reset_token(token: str, expiration: int = 3600) -> str | None:
+    serializer = URLSafeTimedSerializer(Config.email.secret_key)
+    try:
+        return serializer.loads(token, salt=Config.email.security_password_salt, max_age=expiration)
+    except Exception:
+        return None

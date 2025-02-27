@@ -14,6 +14,19 @@ class Token(BaseModel):
     token_expiration_date: CustomDateTime
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ValidateTokenRequest(BaseModel):
+    token: str
+
+
+class ResetPasswordRequest(ValidateTokenRequest):
+    old_password: str
+    new_password: str
+
+
 class AccountCreateRequest(BaseModel):
     """
     Schema for creating a new Account.

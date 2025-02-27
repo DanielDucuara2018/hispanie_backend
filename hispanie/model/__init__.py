@@ -7,6 +7,8 @@ from .event import Event, EventCategory
 from .event_file import EventFile
 from .event_tag import EventTag
 from .file import File
+from .reset_token import ResetToken
+from .social_network import SocialNetwork
 from .tag import Tag
 
 __all__ = [
@@ -22,5 +24,7 @@ __all__ = [
     "EventFile",
     "EventTag",
     "File",
+    "ResetToken",
+    "SocialNetwork",
     "Tag",
 ]

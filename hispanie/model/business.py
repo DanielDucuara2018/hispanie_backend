@@ -13,6 +13,7 @@ from .entity import Entity
 if TYPE_CHECKING:
     from .account import Account
     from .file import File
+    from .social_network import SocialNetwork
     from .tag import Tag
 
 
@@ -44,12 +45,16 @@ class Business(Base, Entity):
 
     # foreign key
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False)
+    account_id: Mapped[str] = mapped_column(ForeignKey("account.id"), nullable=False)
 
     # relationships
 
     # One-to-Many relationship with account
     account: Mapped["Account"] = relationship("Account", back_populates="businesses")
+
+    social_networks: Mapped[list["SocialNetwork"]] = relationship(
+        "SocialNetwork", back_populates="business"
+    )
 
     # Many-to-Many relationship with File
     files: Mapped[list["File"]] = relationship(

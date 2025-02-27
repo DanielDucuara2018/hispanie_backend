@@ -1,8 +1,8 @@
 import logging
-import os
 
 import boto3
 
+from ..config import Config
 from ..model import File
 from ..schema import FileCreateRequest, FileUpdateRequest
 from ..utils import ensure_user_owns_resource
@@ -10,17 +10,11 @@ from .account import read as read_accounts
 
 logger = logging.getLogger(__name__)
 
-# AWS Configuration
-S3_BUCKET = os.getenv("S3_BUCKET")
-AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
-AWS_REGION = os.getenv("AWS_REGION")
-
 s3_client = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY,
-    aws_secret_access_key=AWS_SECRET_KEY,
-    region_name=AWS_REGION,
+    aws_access_key_id=Config.aws.access_key,
+    aws_secret_access_key=Config.aws.secret_key,
+    region_name=Config.aws.region,
 )
 
 
@@ -31,10 +25,9 @@ def generate_upload_presigned_url(
     return s3_client.generate_presigned_url(
         "put_object",
         Params={
-            "Bucket": S3_BUCKET,
+            "Bucket": Config.aws.bucket_name,
             "Key": filename,
             "ContentType": content_type,
-            # "ACL": "public-read",  # Optional, depends on your use case
         },
         ExpiresIn=3600,  # 1 hour validity
         HttpMethod="PUT",
@@ -45,7 +38,7 @@ def generate_download_presigned_url(filename: str):
     return s3_client.generate_presigned_url(
         "get_object",
         Params={
-            "Bucket": S3_BUCKET,
+            "Bucket": Config.aws.bucket_name,
             "Key": filename,
         },
     )

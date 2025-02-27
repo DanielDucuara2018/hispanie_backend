@@ -9,6 +9,7 @@ from .base import Base
 from .business import Business
 from .event import Event
 from .file import File
+from .reset_token import ResetToken
 from .resource import Resource
 
 
@@ -84,6 +85,10 @@ class Account(Base, Resource):
 
     files: Mapped[list["File"]] = relationship(
         "File", back_populates="account", cascade="all, delete-orphan"
+    )
+
+    reset_tokens: Mapped[list["ResetToken"]] = relationship(
+        "ResetToken", back_populates="account", cascade="all, delete-orphan"
     )
 
     @property

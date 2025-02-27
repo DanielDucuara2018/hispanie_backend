@@ -21,6 +21,7 @@ class FileCreateRequest(BaseModel):
     content_type: str = Field(..., min_length=3, max_length=100)
     category: FileCategory
     path: str = Field(..., min_length=3, max_length=1000)
+    hash: str = Field(..., min_length=3, max_length=1000)
     description: str | None = Field(None, min_length=5, max_length=1000)
 
 
@@ -33,6 +34,7 @@ class FileUpdateRequest(BaseModel):
     content_type: str | None = Field(None, min_length=3, max_length=100)
     category: FileCategory | None
     path: str | None = Field(None, min_length=3, max_length=1000)
+    hash: str | None = Field(..., min_length=3, max_length=1000)
     description: str | None = Field(None, min_length=5, max_length=1000)
 
 
@@ -46,6 +48,7 @@ class FileResponse(BaseModel):
 
     id: str
     path: str
+    hash: str
     content_type: str
     category: FileCategory
     description: str | None
@@ -70,6 +73,7 @@ class FileBasicResponse(BaseModel):
 
     id: str
     path: str
+    hash: str
     category: FileCategory
     creation_date: CustomDateTime
     update_date: CustomDateTime | None

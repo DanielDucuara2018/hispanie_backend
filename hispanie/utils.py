@@ -1,11 +1,17 @@
 import random
-from typing import Any, Optional
+from dataclasses import fields
+from typing import Any, Optional, Type, TypeVar
 
 import bcrypt
+from apischema import deserialize
 from fastapi import HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
+
+_config_fields: dict[Type, Optional[Any]] = {}
+
+Cls = TypeVar("Cls", bound=Type)
 
 TOKEN_KEY_NAME = "access_token"
 
@@ -41,6 +47,32 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
             else:
                 return None
         return param
+
+
+class ConfigurationField:
+    def __init__(self, name: str):
+        self.name = name
+
+    def __get__(self, instance, owner):
+        assert instance is None
+        try:
+            return getattr(_config_fields[owner], self.name)
+        except AttributeError:
+            raise RuntimeError("Configuration not loaded") from None
+        except KeyError:
+            raise RuntimeError("Configuration is not root") from None
+
+
+def load_configuration(cls: Cls) -> Cls:
+    for field_ in fields(cls):
+        setattr(cls, field_.name, ConfigurationField(field_.name))
+    _config_fields[cls] = None
+    return cls
+
+
+def load_configuration_data(config: dict[str, Any]) -> None:
+    for key, _ in _config_fields.items():
+        _config_fields[key] = deserialize(key, config)
 
 
 def idv2(prefix: str, *, version: int = 0, code: int = 1022) -> str:  # fix calculation

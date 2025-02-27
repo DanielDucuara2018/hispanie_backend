@@ -1,4 +1,4 @@
-from sqlalchemy import ARRAY, Boolean, Float, String
+from sqlalchemy import Boolean, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .resource import Resource
@@ -16,21 +16,19 @@ class Entity(Resource):
     phone: Mapped[str | None] = mapped_column(String)
 
     # Address details
-    address: Mapped[str] = mapped_column(String, nullable=False)
-    country: Mapped[str] = mapped_column(String, nullable=False)
-    municipality: Mapped[str] = mapped_column(String, nullable=False)
-    city: Mapped[str] = mapped_column(String, nullable=False)
-    postcode: Mapped[str] = mapped_column(String, nullable=False)
-    region: Mapped[str] = mapped_column(String, nullable=False)
+    address: Mapped[str | None] = mapped_column(String)
+    country: Mapped[str | None] = mapped_column(String)
+    municipality: Mapped[str | None] = mapped_column(String)
+    city: Mapped[str | None] = mapped_column(String)
+    postcode: Mapped[str | None] = mapped_column(String)
+    region: Mapped[str | None] = mapped_column(String)
 
     # Geographical coordinates
-    latitude: Mapped[float] = mapped_column(Float, nullable=False)
-    longitude: Mapped[float] = mapped_column(Float, nullable=False)
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
 
     # Visibility
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-
-    urls: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
 
     # DONE email
     # DONE phone number
