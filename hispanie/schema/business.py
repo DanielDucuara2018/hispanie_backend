@@ -10,8 +10,8 @@ class BusinessCreateRequest(BaseModel):
     """
 
     name: str = Field(..., min_length=3, max_length=100)
-    email: EmailStr | None = Field(None, description="Valid email address")
-    phone: str | None = Field(None, pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
+    email: EmailStr = Field(..., description="Valid email address")
+    phone: str = Field(..., pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
     address: str | None = Field(None, min_length=5, max_length=200)
     country: str | None = Field(None, min_length=2, max_length=50)
     municipality: str | None = Field(None, min_length=2, max_length=50)
@@ -31,12 +31,13 @@ class BusinessCreateRequest(BaseModel):
         default_factory=list["FileCreateRequest"],
         description="List of files associated with the event",
     )
-    tags: list["TagBasicResponse"] | None = Field(
+    tags: list["TagBasicResponse"] = Field(
         default_factory=list["TagBasicResponse"],
         description="List of tags associated with the event",
     )
-    urls: list[str] | None = Field(
-        default_factory=list[str], description="List of URLs associated with the event"
+    urls: list["SocialNetworkCreateRequest"] = Field(
+        default_factory=list["SocialNetworkCreateRequest"],
+        description="List of URLs associated with the event",
     )
 
 
@@ -69,7 +70,7 @@ class BusinessUpdateRequest(BaseModel):
     tags: list["TagBasicResponse"] | None = Field(
         default=None, description="List of tags associated with the event"
     )
-    urls: list[str] | None = Field(
+    urls: list["SocialNetworkCreateRequest"] | None = Field(
         default=None, description="List of URLs associated with the event"
     )
 
@@ -83,8 +84,8 @@ class BusinessResponse(BaseModel):
 
     id: str
     name: str
-    email: str | None
-    phone: str | None
+    email: str
+    phone: str
     address: str | None
     country: str | None
     municipality: str | None
@@ -98,10 +99,11 @@ class BusinessResponse(BaseModel):
     description: str | None
     files: list["FileBasicResponse"]
     tags: list["TagBasicResponse"]
-    urls: list[str]
+    urls: list["SocialNetworkBasicResponse"]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
 
 
 from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
+from .social_network import SocialNetworkBasicResponse, SocialNetworkCreateRequest  # noqa: E402
 from .tag import TagBasicResponse  # noqa: E402
