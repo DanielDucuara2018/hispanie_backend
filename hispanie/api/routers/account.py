@@ -17,9 +17,10 @@ from hispanie.schema import (
     AccountCreateRequest,
     AccountResponse,
     AccountUpdateRequest,
-    PasswordResetConfirm,
-    PasswordResetRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
     Token,
+    ValidateTokenRequest,
 )
 
 from ...action import (
@@ -31,6 +32,7 @@ from ...action import (
     get_current_account,
     handle_forgotten_password,
     handle_reset_password,
+    is_reset_token_used,
     read_accounts,
     update_account,
 )
@@ -69,7 +71,7 @@ async def login(
         Config.jwt.access_token_expire_minutes
     ),
     refresh_token_id: str | None = Cookie(None),
-):
+) -> JSONResponse:
     """
     Authenticate a account and return an access token.
     """
@@ -110,24 +112,23 @@ async def login(
 
 # TODO add token account validation
 @router.post("/private/logout")
-async def logout(response: Response, _: None = Depends(get_current_account)):
+async def logout(response: Response, _: None = Depends(get_current_account)) -> None:
     """
     log out an account and delete the cookies info.
     """
     response.delete_cookie(key=TOKEN_KEY_NAME)
-    return {"message": "succefull logout"}
 
 
-# @router.get("/private/check_session")
-# async def check_session(result: str = Depends(check_account_session)):
-#     return result
+@router.post("/public/validate_reset_token")
+async def validate_reset_token(result: ValidateTokenRequest) -> bool:
+    return is_reset_token_used(result.token)
 
 
 @router.post("/public/forgot_password")
 async def forgot_password(
-    request: PasswordResetRequest,
+    request: ForgotPasswordRequest,
     background_tasks: BackgroundTasks,
-):
+) -> None:
     """
     Handle forgotten password request for a given account
     """
@@ -142,13 +143,13 @@ async def forgot_password(
 
 @router.post("/public/reset_password")
 async def reset_password(
-    request: PasswordResetConfirm,
-):
+    request: ResetPasswordRequest,
+) -> None:
     """
     Handle reset password request for a given account
     """
     try:
-        return handle_reset_password(**request.model_dump(exclude_none=True))
+        handle_reset_password(**request.model_dump(exclude_none=True))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

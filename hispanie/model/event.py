@@ -59,7 +59,7 @@ class Event(Base, Entity):
 
     # foreign key
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False)
+    account_id: Mapped[str] = mapped_column(ForeignKey("account.id"), nullable=False)
 
     # relationships
 

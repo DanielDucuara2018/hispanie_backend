@@ -6,6 +6,7 @@ from .account import (
     get_current_account,
     handle_forgotten_password,
     handle_reset_password,
+    is_reset_token_used,
 )
 from .account import create as create_account
 from .account import delete as delete_account
@@ -49,6 +50,7 @@ __all__ = [
     "generate_download_presigned_url",
     "get_current_account",
     "handle_forgotten_password",
+    "is_reset_token_used",
     "read_accounts",
     "read_businesses",
     "read_events",

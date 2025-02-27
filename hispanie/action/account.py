@@ -7,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
 
 from ..config import Config
-from ..model import Account, AccountType
+from ..model import Account, AccountType, ResetToken
 from ..schema import AccountCreateRequest, AccountUpdateRequest
 from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash
 
@@ -145,12 +145,17 @@ def handle_forgotten_password(email: str, background_tasks: BackgroundTasks) -> 
 
     account = accounts[0]
     reset_token = create_reset_token(account.email)
-    background_tasks.add_task(send_reset_email, account.email, reset_token)
+    background_tasks.add_task(send_reset_email, account, reset_token)
     logger.info("Preparing email for account %s to email %s", account.id, account.email)
 
 
-def handle_reset_password(token: str, old_password: str, new_password: str) -> Account:
+def handle_reset_password(token: str, old_password: str, new_password: str) -> None:
     logger.info("Reseting password")
+
+    is_used = is_reset_token_used(token)
+    if is_used:
+        raise HTTPException(status_code=400, detail="This token was already used")
+
     email = verify_reset_token(token)
     if not email:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
@@ -164,20 +169,42 @@ def handle_reset_password(token: str, old_password: str, new_password: str) -> A
 
     result = account.update(password=new_password)
     logger.info("Reseted password for account %s", result.id)
+    set_reset_token_as_used(token)
 
 
-async def send_reset_email(email: str, token: str) -> None:
-    logger.info("Sending email to %s", email)
-    reset_url = f"{Config.email.frontend_url}/reset-password?token={token}"
+async def send_reset_email(account: Account, token: str) -> None:
+    logger.info("Sending email to %s", account.email)
+    reset_url = f"{Config.email.frontend_url}/reset_password?token={token}"
     message = MessageSchema(
         subject="Password Reset Request",
-        recipients=[email],
+        recipients=[account.email],
         body=f"Please click the following link to reset your password: {reset_url}",
         subtype="html",
     )
     fm = FastMail(EMAIL_CONFIG)
     await fm.send_message(message)
-    logger.info("Email sent to %s", email)
+    logger.info("Email sent to %s", account.email)
+    save_reset_token(account, token)
+
+
+def save_reset_token(account: Account, token: str) -> None:
+    [reset_token.update(used=True) for reset_token in account.reset_tokens]
+    logger.info("Saving reset token in DB")
+    ResetToken(id=token, account=account).create()
+    logger.info("Saved reset token in DB")
+
+
+def is_reset_token_used(token: str) -> bool:
+    logger.info("Validating if reset token was used")
+    reset_token = ResetToken.get(id=token)
+    logger.info("Reset token status used = %s", reset_token.used)
+    return reset_token.used
+
+
+def set_reset_token_as_used(token: str) -> None:
+    logger.info("Set reset token as used")
+    reset_token = ResetToken.get(id=token).update(used=True)
+    logger.info("Reset token status used = %s", reset_token.used)
 
 
 def create_reset_token(email: str) -> str:

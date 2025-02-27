@@ -2,9 +2,10 @@ from .account import (
     AccountCreateRequest,
     AccountResponse,
     AccountUpdateRequest,
-    PasswordResetConfirm,
-    PasswordResetRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
     Token,
+    ValidateTokenRequest,
 )
 from .business import BusinessCreateRequest, BusinessResponse, BusinessUpdateRequest
 from .event import EventCreateRequest, EventResponse, EventUpdateRequest
@@ -28,13 +29,14 @@ __all__ = [
     "EventUpdateRequest",
     "FileCreateRequest",
     "FileGeneratePresignedUrlResponse",
-    "PasswordResetRequest",
+    "ForgotPasswordRequest",
     "FileResponse",
     "FileUpdateRequest",
-    "PasswordResetConfirm",
+    "ResetPasswordRequest",
     "TagBasicResponse",
     "TagCreateRequest",
     "TagResponse",
     "TagUpdateRequest",
     "Token",
+    "ValidateTokenRequest",
 ]
