@@ -10,8 +10,8 @@ class BusinessCreateRequest(BaseModel):
     """
 
     name: str = Field(..., min_length=3, max_length=100)
-    email: EmailStr = Field(..., description="Valid email address")
-    phone: str = Field(..., pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
+    email: EmailStr | None = Field(None, description="Valid email address")
+    phone: str | None = Field(None, pattern=r"^\+?[0-9\s-]+$", description="Valid phone number")
     address: str | None = Field(None, min_length=5, max_length=200)
     country: str | None = Field(None, min_length=2, max_length=50)
     municipality: str | None = Field(None, min_length=2, max_length=50)
@@ -84,8 +84,8 @@ class BusinessResponse(BaseModel):
 
     id: str
     name: str
-    email: str
-    phone: str
+    email: str | None
+    phone: str | None
     address: str | None
     country: str | None
     municipality: str | None
