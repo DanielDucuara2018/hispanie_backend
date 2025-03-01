@@ -1,6 +1,6 @@
 import logging
 
-from ..model import Business, File
+from ..model import Business, File, SocialNetwork
 from ..schema import BusinessCreateRequest, BusinessUpdateRequest
 from ..utils import ensure_user_owns_resource
 from .account import read as read_accounts
@@ -14,9 +14,15 @@ def create(business_data: BusinessCreateRequest, account_id: str) -> Business:
     data = business_data.model_dump()
     logger.info("Adding new business: %s", data)
     # Format and check tags and files
+    social_networks = data.pop("social_networks")
     files = [File(account=account, **file).create() for file in data.pop("files")]
     tags = read_tags(id=[t["id"] for t in data.pop("tags")])
     business = Business(account=account, tags=tags, files=files, **data).create()
+    s_ns = [
+        SocialNetwork(**social_network, business_id=business.id).create()
+        for social_network in social_networks
+    ]
+    business.update(social_networks=s_ns)
     logger.info("Added new business %s", business.id)
     return business
 

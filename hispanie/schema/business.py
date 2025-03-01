@@ -31,12 +31,13 @@ class BusinessCreateRequest(BaseModel):
         default_factory=list["FileCreateRequest"],
         description="List of files associated with the event",
     )
-    tags: list["TagBasicResponse"] | None = Field(
+    tags: list["TagBasicResponse"] = Field(
         default_factory=list["TagBasicResponse"],
         description="List of tags associated with the event",
     )
-    urls: list[str] | None = Field(
-        default_factory=list[str], description="List of URLs associated with the event"
+    social_networks: list["SocialNetworkCreateRequest"] = Field(
+        default_factory=list["SocialNetworkCreateRequest"],
+        description="List of URLs associated with the event",
     )
 
 
@@ -69,7 +70,7 @@ class BusinessUpdateRequest(BaseModel):
     tags: list["TagBasicResponse"] | None = Field(
         default=None, description="List of tags associated with the event"
     )
-    urls: list[str] | None = Field(
+    social_networks: list["SocialNetworkCreateRequest"] | None = Field(
         default=None, description="List of URLs associated with the event"
     )
 
@@ -98,10 +99,11 @@ class BusinessResponse(BaseModel):
     description: str | None
     files: list["FileBasicResponse"]
     tags: list["TagBasicResponse"]
-    urls: list[str]
+    social_networks: list["SocialNetworkBasicResponse"]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
 
 
 from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
+from .social_network import SocialNetworkBasicResponse, SocialNetworkCreateRequest  # noqa: E402
 from .tag import TagBasicResponse  # noqa: E402
