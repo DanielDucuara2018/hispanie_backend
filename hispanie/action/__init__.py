@@ -12,6 +12,10 @@ from .account import create as create_account
 from .account import delete as delete_account
 from .account import read as read_accounts
 from .account import update as update_account
+from .activity import create as create_activity
+from .activity import delete as delete_activity
+from .activity import read as read_activities
+from .activity import update as update_activity
 from .business import create as create_business
 from .business import delete as delete_business
 from .business import read as read_businesses
@@ -35,12 +39,14 @@ __all__ = [
     "authenticate_account",
     "check_account_session",
     "create_account",
+    "create_activity",
     "create_business",
     "create_event",
     "create_file",
     "create_tag",
     "create_access_token",
     "delete_account",
+    "delete_activity",
     "delete_business",
     "delete_event",
     "delete_file",
@@ -52,12 +58,14 @@ __all__ = [
     "handle_forgotten_password",
     "is_reset_token_used",
     "read_accounts",
+    "read_activities",
     "read_businesses",
     "read_events",
     "read_files",
     "read_tags",
     "handle_reset_password",
     "update_account",
+    "update_activity",
     "update_business",
     "update_event",
     "update_file",

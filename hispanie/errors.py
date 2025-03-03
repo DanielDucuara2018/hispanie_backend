@@ -47,3 +47,9 @@ class NoTagFound(Error):
     code = 1004
     reason = "no-tag-found"
     description = "No tag found in DB."
+
+
+class NoActivityFound(Error):
+    code = 1005
+    reason = "no-activity-found"
+    description = "No activity found in DB."

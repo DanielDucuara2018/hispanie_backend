@@ -1,4 +1,5 @@
 from .account import Account, AccountType
+from .activity import Activity
 from .base import Base
 from .business import Business, BusinessCategory
 from .business_file import BusinessFile
@@ -14,6 +15,7 @@ from .tag import Tag
 __all__ = [
     "Account",
     "AccountType",
+    "Activity",
     "Base",
     "Business",
     "BusinessCategory",

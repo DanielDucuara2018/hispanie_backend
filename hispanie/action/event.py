@@ -1,6 +1,6 @@
 import logging
 
-from ..model import Event, File, Tag
+from ..model import Activity, Event, File, Tag
 from ..schema import EventCreateRequest, EventUpdateRequest
 from ..utils import ensure_user_owns_resource
 from .account import read as read_accounts
@@ -13,10 +13,17 @@ def create(event_data: EventCreateRequest, account_id: str) -> Event:
     account = read_accounts(account_id)
     data = event_data.model_dump()
     logger.info("Adding new event: %s", data)
-    # Format and check tags and files
+    # Format and check extra models
+    activities = [Activity(**act) for act in data.pop("activities")]
     files = [File(account=account, **file).create() for file in data.pop("files")]
     tags = read_tags(id=[tag["id"] for tag in data.pop("tags")])
-    event = Event(account=account, tags=tags, files=files, **data).create()
+    event = Event(
+        account=account,
+        activities=activities,
+        files=files,
+        tags=tags,
+        **data,
+    ).create()
     logger.info("Added new event: %s", event.id)
     return event
 

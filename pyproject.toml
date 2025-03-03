@@ -3,13 +3,13 @@ quote-style = "double"
 indent-style = "space"
 preview = true
 
+[tool.ruff.lint]
+extend-select = ["I", "D"]
+fixable = ["I", "D", "F401"]
+ignore = ["D1"]
+
 [tool.ruff]
 line-length = 100
-lint.extend-select = [
-    "I",  # isort (imports sorting)
-]
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-lint.fixable = ["I", "F401"]
 # Exclude a variety of commonly ignored directories.
 exclude = [
     ".bzr",

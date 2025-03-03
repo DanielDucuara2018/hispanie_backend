@@ -7,12 +7,13 @@ from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..errors import NoEventFound
-from ..utils import idv2
+from ..utils import idun
 from .base import Base
 from .entity import Entity
 
 if TYPE_CHECKING:
     from .account import Account
+    from .activity import Activity
     from .file import File
     from .tag import Tag
 
@@ -34,9 +35,7 @@ class Event(Base, Entity):
     __tablename__ = "event"
     __errors__ = {"_error": NoEventFound}
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: idv2("event", version=1)
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: idun("event"))
 
     category: Mapped[EventCategory] = mapped_column(SQLAEnum(EventCategory), nullable=False)
 
@@ -65,6 +64,11 @@ class Event(Base, Entity):
 
     # One-to-Many relationship with account
     account: Mapped["Account"] = relationship("Account", back_populates="events")
+
+    # One-to-Many relationship with activity
+    activities: Mapped[list["Activity"]] = relationship(
+        "Activity", back_populates="event", cascade="all, delete-orphan"
+    )
 
     # Many-to-Many relationship with File
     files: Mapped[list["File"]] = relationship(

@@ -4,7 +4,7 @@ from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..utils import generate_password_hash, idv2
+from ..utils import generate_password_hash, idun
 from .base import Base
 from .business import Business
 from .event import Event
@@ -19,11 +19,10 @@ class AccountType(Enum):
 
 
 class Account(Base, Resource):
-    """
-    Represents an account in the system, managing user credentials, contact information, and related entities.
+    """Represents an account in the system, managing user credentials, contact information, and related entities.
 
     Attributes:
-        id (str): A unique identifier for the account, generated using the `idv2` utility.
+        id (str): A unique identifier for the account, generated using the `idun` utility.
         username (str): The username of the account holder. Uniqueness to be enforced.
         email (str): The email address associated with the account. Must be unique.
         phone (str | None): The phone number of the account holder, optional.
@@ -48,13 +47,12 @@ class Account(Base, Resource):
     Usage:
         account = Account(username="johndoe", email="john@example.com", type=AccountType.USER)
         account.password = "securepassword123"  # Automatically hashes the password
+
     """
 
     __tablename__ = "account"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: idv2("account", version=1)
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: idun("account"))
 
     username: Mapped[str] = mapped_column(String, nullable=False)  # TODO is it unique ?
 

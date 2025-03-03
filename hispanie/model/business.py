@@ -6,7 +6,7 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..errors import NoBusinessFound
-from ..utils import idv2
+from ..utils import idun
 from .base import Base
 from .entity import Entity
 
@@ -31,9 +31,7 @@ class Business(Base, Entity):
     __tablename__ = "business"
     __errors__ = {"_error": NoBusinessFound}
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: idv2("business", version=1)
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: idun("business"))
 
     category: Mapped[BusinessCategory] = mapped_column(SQLAEnum(BusinessCategory), nullable=False)
 

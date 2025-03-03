@@ -7,9 +7,7 @@ from ..typing import CustomDateTime
 
 
 class EventCreateRequest(BaseModel):
-    """
-    Schema for creating a new Event.
-    """
+    """Schema for creating a new Event."""
 
     name: str = Field(..., min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
@@ -28,6 +26,10 @@ class EventCreateRequest(BaseModel):
     price: float = Field(..., ge=0.0, description="Price of the event")
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
+    activities: list["ActivityBasicCreateRequest"] = Field(
+        default_factory=list["ActivityBasicCreateRequest"],
+        description="List of activities associated with the event",
+    )
     files: list["FileCreateRequest"] = Field(
         default_factory=list["FileCreateRequest"],
         description="List of files associated with the event",
@@ -39,9 +41,7 @@ class EventCreateRequest(BaseModel):
 
 
 class EventUpdateRequest(BaseModel):
-    """
-    Schema for updating an existing Event.
-    """
+    """Schema for updating an existing Event."""
 
     name: str | None = Field(None, min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
@@ -65,17 +65,17 @@ class EventUpdateRequest(BaseModel):
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
     files: list["FileCreateRequest"] | None = Field(
-        default=None, description="List of files associated with the event"
+        default=None,
+        description="List of files associated with the event",
     )
     tags: list["TagBasicResponse"] | None = Field(
-        default=None, description="List of tags associated with the event"
+        default=None,
+        description="List of tags associated with the event",
     )
 
 
 class EventResponse(BaseModel):
-    """
-    Schema for returning Event data.
-    """
+    """Schema for returning Event data."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -93,11 +93,13 @@ class EventResponse(BaseModel):
     price: float
     start_date: CustomDateTime
     end_date: CustomDateTime
+    activities: list["ActivityResponse"]
     files: list["FileBasicResponse"]
     tags: list["TagBasicResponse"]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
 
 
+from .activity import ActivityBasicCreateRequest, ActivityResponse  # noqa: E402
 from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
 from .tag import TagBasicResponse  # noqa: E402
