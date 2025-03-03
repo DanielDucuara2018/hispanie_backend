@@ -36,9 +36,6 @@ class EventCreateRequest(BaseModel):
         default_factory=list["TagBasicResponse"],
         description="List of tags associated with the event",
     )
-    urls: list[str] = Field(
-        default_factory=list[str], description="List of URLs associated with the event"
-    )
 
 
 class EventUpdateRequest(BaseModel):
@@ -73,9 +70,6 @@ class EventUpdateRequest(BaseModel):
     tags: list["TagBasicResponse"] | None = Field(
         default=None, description="List of tags associated with the event"
     )
-    urls: list[str] | None = Field(
-        default=None, description="List of URLs associated with the event"
-    )
 
 
 class EventResponse(BaseModel):
@@ -101,7 +95,6 @@ class EventResponse(BaseModel):
     end_date: CustomDateTime
     files: list["FileBasicResponse"]
     tags: list["TagBasicResponse"]
-    urls: list[str]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
 
