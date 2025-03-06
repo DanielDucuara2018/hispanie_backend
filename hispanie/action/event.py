@@ -53,6 +53,7 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
 def delete(event_id: str, account_id: str) -> Event:
     logger.info("Deleting event: %s", event_id)
     event = Event.get(id=event_id)
+    # TODO add adming account can delete whateve it wants
     ensure_user_owns_resource(account_id, event.account_id)
     result = event.delete()
     logger.info("Deleted event: %s", event_id)

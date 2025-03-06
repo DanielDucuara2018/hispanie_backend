@@ -56,9 +56,7 @@ class Business(Base, Entity):
 
     # Many-to-Many relationship with File
     files: Mapped[list["File"]] = relationship(
-        "File",
-        secondary="business_file",
-        back_populates="businesses",
+        "File", back_populates="business", cascade="all, delete-orphan"
     )
 
     # Many-to-Many relationship with Tag

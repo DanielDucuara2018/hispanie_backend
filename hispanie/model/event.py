@@ -72,9 +72,7 @@ class Event(Base, Entity):
 
     # Many-to-Many relationship with File
     files: Mapped[list["File"]] = relationship(
-        "File",
-        secondary="event_file",
-        back_populates="events",
+        "File", back_populates="event", cascade="all, delete-orphan"
     )
 
     # Many-to-Many relationship with Tag
