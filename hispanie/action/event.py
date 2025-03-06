@@ -15,7 +15,7 @@ def create(event_data: EventCreateRequest, account_id: str) -> Event:
     logger.info("Adding new event: %s", data)
     # Format and check extra models
     activities = [Activity(**act) for act in data.pop("activities")]
-    files = [File(account=account, **file).create() for file in data.pop("files")]
+    files = [File(**file).create() for file in data.pop("files")]
     tags = read_tags(id=[tag["id"] for tag in data.pop("tags")])
     event = Event(
         account=account,

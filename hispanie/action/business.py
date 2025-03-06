@@ -15,7 +15,7 @@ def create(business_data: BusinessCreateRequest, account_id: str) -> Business:
     logger.info("Adding new business: %s", data)
     # Format and check extra models
     social_networks = [SocialNetwork(**sn) for sn in data.pop("social_networks")]
-    files = [File(account=account, **file).create() for file in data.pop("files")]
+    files = [File(**file).create() for file in data.pop("files")]
     tags = read_tags(id=[t["id"] for t in data.pop("tags")])
     business = Business(
         account=account,
