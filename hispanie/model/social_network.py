@@ -4,7 +4,7 @@ from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..utils import idv2
+from ..utils import idun
 from .base import Base
 from .business import Business
 from .resource import Resource
@@ -22,7 +22,7 @@ class SocialNetwork(Base, Resource):
     __tablename__ = "social_network"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: idv2("social_network", version=1)
+        String, primary_key=True, default=lambda: idun("social_network")
     )
 
     url: Mapped[str] = mapped_column(String, nullable=False)

@@ -13,16 +13,17 @@ def create(business_data: BusinessCreateRequest, account_id: str) -> Business:
     account = read_accounts(account_id)
     data = business_data.model_dump()
     logger.info("Adding new business: %s", data)
-    # Format and check tags and files
-    social_networks = data.pop("social_networks")
+    # Format and check extra models
+    social_networks = [SocialNetwork(**sn) for sn in data.pop("social_networks")]
     files = [File(account=account, **file).create() for file in data.pop("files")]
     tags = read_tags(id=[t["id"] for t in data.pop("tags")])
-    business = Business(account=account, tags=tags, files=files, **data).create()
-    s_ns = [
-        SocialNetwork(**social_network, business_id=business.id).create()
-        for social_network in social_networks
-    ]
-    business.update(social_networks=s_ns)
+    business = Business(
+        account=account,
+        files=files,
+        social_networks=social_networks,
+        tags=tags,
+        **data,
+    ).create()
     logger.info("Added new business %s", business.id)
     return business
 

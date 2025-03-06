@@ -5,7 +5,7 @@ from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..utils import idv2
+from ..utils import idun
 from .base import Base
 from .business import Business
 from .event import Event
@@ -23,9 +23,7 @@ class FileCategory(Enum):
 class File(Base, Resource):
     __tablename__ = "file"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: idv2("file", version=1)
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: idun("file"))
 
     filename: Mapped[str] = mapped_column(String, nullable=False)
 

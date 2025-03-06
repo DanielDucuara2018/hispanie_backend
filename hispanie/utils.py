@@ -1,4 +1,4 @@
-import random
+import secrets
 from dataclasses import fields
 from typing import Any, Optional, Type, TypeVar
 
@@ -75,9 +75,8 @@ def load_configuration_data(config: dict[str, Any]) -> None:
         _config_fields[key] = deserialize(key, config)
 
 
-def idv2(prefix: str, *, version: int = 0, code: int = 1022) -> str:  # fix calculation
-    random_bytes = (version << 127) + (code << 127) + random.getrandbits(117)
-    return f"{prefix}-{random_bytes:032x}"
+def idun(prefix: str, nbytes: int = 16) -> str:
+    return f"{prefix}-{secrets.token_hex(nbytes)}"
 
 
 def generate_password_hash(password: str) -> bytes:
@@ -89,10 +88,8 @@ def check_password_hash(hashed_password: bytes, input_password: str) -> bool:
 
 
 # Helper function for error handling
-def ensure_user_owns_resource(current_account_id: str, resource_owner_id: int) -> None:
-    """
-    Raise an exception if the current account does not own the resource.
-    """
+def ensure_user_owns_resource(current_account_id: str, resource_owner_id: str) -> None:
+    """Raise an exception if the current account does not own the resource."""
     if current_account_id != resource_owner_id:
         raise Exception("You do not have permission to access this resource.")
 

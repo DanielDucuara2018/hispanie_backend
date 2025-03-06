@@ -16,9 +16,7 @@ async def create(
     tag_data: TagCreateRequest,
     _: None = Depends(get_current_account),
 ):
-    """
-    Create a new tag for the authenticated account.
-    """
+    """Create a new tag for the authenticated account."""
     try:
         return create_tag(tag_data)
     except Exception as e:
@@ -30,9 +28,7 @@ async def create(
 async def read(
     _: None = Depends(get_current_account),
 ):
-    """
-    Retrieve all tag for the authenticated account.
-    """
+    """Retrieve all tag for the authenticated account."""
     try:
         return read_tags()
     except Exception as e:
@@ -46,9 +42,7 @@ async def update(
     tag_update: TagUpdateRequest,
     _: None = Depends(get_current_account),
 ):
-    """
-    Update an tag by its ID.
-    """
+    """Update a tag by its ID."""
     try:
         return update_tag(tag_id, tag_update)
     except Exception as e:
@@ -61,9 +55,7 @@ async def delete(
     tag_id: str,
     _: None = Depends(get_current_account),
 ):
-    """
-    Delete an tag by its ID.
-    """
+    """Delete a tag by its ID."""
     try:
         return delete_tag(tag_id)
     except Exception as e:

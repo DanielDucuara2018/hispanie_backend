@@ -7,6 +7,12 @@ from .account import (
     Token,
     ValidateTokenRequest,
 )
+from .activity import (
+    ActivityBasicCreateRequest,
+    ActivityCreateRequest,
+    ActivityResponse,
+    ActivityUpdateRequest,
+)
 from .business import BusinessCreateRequest, BusinessResponse, BusinessUpdateRequest
 from .event import EventCreateRequest, EventResponse, EventUpdateRequest
 from .file import (
@@ -21,6 +27,10 @@ __all__ = [
     "AccountCreateRequest",
     "AccountResponse",
     "AccountUpdateRequest",
+    "ActivityBasicCreateRequest",
+    "ActivityCreateRequest",
+    "ActivityResponse",
+    "ActivityUpdateRequest",
     "BusinessCreateRequest",
     "BusinessResponse",
     "BusinessUpdateRequest",

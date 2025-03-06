@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ..db import initialize
 from .routers.account import router as account_router
+from .routers.activity import router as activity_router
 from .routers.business import router as business_router
 from .routers.event import router as event_router
 from .routers.file import router as file_router
@@ -42,6 +43,7 @@ app.add_middleware(
 )
 
 app.include_router(account_router, prefix=API_PREFIX)
+app.include_router(activity_router, prefix=API_PREFIX)
 app.include_router(business_router, prefix=API_PREFIX)
 app.include_router(event_router, prefix=API_PREFIX)
 app.include_router(file_router, prefix=API_PREFIX)
