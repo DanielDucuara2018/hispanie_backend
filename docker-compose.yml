@@ -24,6 +24,7 @@ services:
       postgres:
         condition: service_healthy
 
+  # TODO fix container name to use postgres-service as in hispanie.ini config file
   postgres:
     image: postgres:17.1-alpine
     networks:
