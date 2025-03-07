@@ -2,7 +2,7 @@ import logging
 
 from ..model import Business, File, SocialNetwork
 from ..schema import BusinessCreateRequest, BusinessUpdateRequest
-from ..utils import ensure_user_owns_resource
+from ..utils import ensure_user_owns_resource, handle_update_files, handle_update_resources
 from .account import read as read_accounts
 from .tag import read as read_tags
 
@@ -45,6 +45,12 @@ def update(business_id: str, account_id: str, business_data: BusinessUpdateReque
     # Format and check tags
     if tags := data.pop("tags", []):
         data["tags"] = read_tags(id=[t["id"] for t in tags])
+    if files := data.pop("files", []):
+        data["files"] = handle_update_files(files, File)
+    if social_networks := data.pop("social_networks", []):
+        data["social_networks"] = handle_update_resources(
+            social_networks, business.social_networks, SocialNetwork
+        )
     result = business.update(**data)
     logger.info("Updated business: %s", business_id)
     return result
@@ -57,3 +63,19 @@ def delete(event_id: str, account_id: str) -> Business:
     result = business.delete()
     logger.info("Deleted business: %s", event_id)
     return result
+
+
+# def handle_update_social_networks(
+#     new_social_networks: list[dict[str, Any]], old_social_networks: list[SocialNetwork]
+# ):
+#     old_social_network_ids = {sn.id for sn in old_social_networks}
+#     new_social_network_ids = {sn["id"] for sn in new_social_networks if "id" in sn}
+
+#     social_network_ids_to_delete = old_social_network_ids - new_social_network_ids
+#     social_network_ids_to_create = [sn for sn in new_social_networks if "id" not in sn]
+
+#     [SocialNetwork.get(id=id).delete() for id in social_network_ids_to_delete]
+
+#     return [SocialNetwork(**sn) for sn in social_network_ids_to_create] + [
+#         SocialNetwork.get(id=id) for id in new_social_network_ids
+#     ]

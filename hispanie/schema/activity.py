@@ -27,6 +27,7 @@ class ActivityCreateRequest(BaseModel):
 class ActivityUpdateRequest(BaseModel):
     """Schema for updating an activity."""
 
+    id: str | None = Field(None, min_length=3, max_length=100)
     name: str | None = Field(
         None, min_length=1, max_length=500, description="Update name of the activity."
     )

@@ -22,7 +22,7 @@ class EventCreateRequest(BaseModel):
     longitude: float = Field(..., ge=-180.0, le=180.0, description="Longitude in decimal degrees")
     category: EventCategory
     is_public: bool = Field(default=False, description="Whether the event is public or not")
-    description: str | None = Field(None, max_length=500)
+    description: str | None = Field(None, max_length=1000)
     price: float = Field(..., ge=0.0, description="Price of the event")
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
@@ -60,11 +60,15 @@ class EventUpdateRequest(BaseModel):
     )
     category: EventCategory | None = None
     is_public: bool | None = Field(None, description="Whether the event is public or not")
-    description: str | None = Field(None, max_length=500)
+    description: str | None = Field(None, max_length=1000)
     price: float | None = Field(None, ge=0.0, description="Price of the event")
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
-    files: list["FileCreateRequest"] | None = Field(
+    activities: list["ActivityBasicCreateRequest"] | None = Field(
+        default_factory=None,
+        description="List of activities associated with the event",
+    )
+    files: list["FileUpdateRequest"] | None = Field(
         default=None,
         description="List of files associated with the event",
     )
@@ -84,7 +88,11 @@ class EventResponse(BaseModel):
     email: str | None
     phone: str | None
     address: str
+    country: str
+    municipality: str
     city: str
+    postcode: str
+    region: str
     latitude: float
     longitude: float
     category: EventCategory
@@ -101,5 +109,5 @@ class EventResponse(BaseModel):
 
 
 from .activity import ActivityBasicCreateRequest, ActivityResponse  # noqa: E402
-from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
+from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402
 from .tag import TagBasicResponse  # noqa: E402
