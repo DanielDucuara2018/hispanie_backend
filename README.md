@@ -42,3 +42,16 @@ Forward port in host machine:
 ```bash
 ssh -L 127.0.0.1:3201:hispanie:3201 username@ip_address
 ```
+
+## Build docker image for production
+
+```bash
+docker-compose build
+docker tag hispanie_backend-app europe-west4-docker.pkg.dev/hispanie/hispanie-docker/hispanie_backend-app:0.1
+```
+
+## Push docker production image
+
+```bash
+docker push europe-west4-docker.pkg.dev/hispanie/hispanie-docker/hispanie_backend-app:0.1
+```
