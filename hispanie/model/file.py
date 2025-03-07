@@ -36,23 +36,17 @@ class File(Base, Resource):
     hash: Mapped[str] = mapped_column(String, nullable=False)
 
     # foreign key
-    account_id: Mapped[str] = mapped_column(ForeignKey("account.id"))
+    account_id: Mapped[str | None] = mapped_column(ForeignKey("account.id"))
+
+    event_id: Mapped[str | None] = mapped_column(ForeignKey("event.id"))
+
+    business_id: Mapped[str | None] = mapped_column(ForeignKey("business.id"))
 
     # relationship
 
     # Zero-to-Many relationship with account
     account: Mapped["Account"] = relationship("Account", back_populates="files")
 
-    # Many-to-Many relationship with Event
-    events: Mapped[list["Event"]] = relationship(
-        "Event",
-        secondary="event_file",
-        back_populates="files",
-    )
+    event: Mapped["Event"] = relationship("Event", back_populates="files")
 
-    # Many-to-Many relationship with Business
-    businesses: Mapped[list["Business"]] = relationship(
-        "Business",
-        secondary="business_file",
-        back_populates="files",
-    )
+    business: Mapped["Business"] = relationship("Business", back_populates="files")

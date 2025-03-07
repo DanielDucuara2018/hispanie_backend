@@ -51,14 +51,12 @@ class Business(Base, Entity):
     account: Mapped["Account"] = relationship("Account", back_populates="businesses")
 
     social_networks: Mapped[list["SocialNetwork"]] = relationship(
-        "SocialNetwork", back_populates="business"
+        "SocialNetwork", back_populates="business", cascade="all, delete-orphan"
     )
 
     # Many-to-Many relationship with File
     files: Mapped[list["File"]] = relationship(
-        "File",
-        secondary="business_file",
-        back_populates="businesses",
+        "File", back_populates="business", cascade="all, delete-orphan"
     )
 
     # Many-to-Many relationship with Tag

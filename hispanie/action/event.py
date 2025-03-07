@@ -15,7 +15,7 @@ def create(event_data: EventCreateRequest, account_id: str) -> Event:
     logger.info("Adding new event: %s", data)
     # Format and check extra models
     activities = [Activity(**act) for act in data.pop("activities")]
-    files = [File(account=account, **file).create() for file in data.pop("files")]
+    files = [File(**file).create() for file in data.pop("files")]
     tags = read_tags(id=[tag["id"] for tag in data.pop("tags")])
     event = Event(
         account=account,
@@ -53,6 +53,7 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
 def delete(event_id: str, account_id: str) -> Event:
     logger.info("Deleting event: %s", event_id)
     event = Event.get(id=event_id)
+    # TODO add adming account can delete whateve it wants
     ensure_user_owns_resource(account_id, event.account_id)
     result = event.delete()
     logger.info("Deleted event: %s", event_id)
