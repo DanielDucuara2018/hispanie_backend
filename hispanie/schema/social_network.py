@@ -11,6 +11,14 @@ class SocialNetworkCreateRequest(BaseModel):
     category: SocialNetworkCategory
 
 
+class SocialNetworkUpdateRequest(BaseModel):
+    """Schema for adding a new Social Network ulr."""
+
+    id: str | None = Field(None, min_length=3, max_length=100)
+    url: str | None = Field(None, min_length=3, max_length=1000)
+    category: SocialNetworkCategory
+
+
 class SocialNetworkBasicResponse(BaseModel):
     """Schema for returning File data."""
 

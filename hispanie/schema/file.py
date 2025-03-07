@@ -24,6 +24,7 @@ class FileCreateRequest(BaseModel):
 class FileUpdateRequest(BaseModel):
     """Schema for updating an existing File."""
 
+    id: str | None = Field(None, min_length=3, max_length=100)
     filename: str | None = Field(None, min_length=3, max_length=100)
     content_type: str | None = Field(None, min_length=3, max_length=100)
     category: FileCategory | None

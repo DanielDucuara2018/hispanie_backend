@@ -2,7 +2,7 @@ import logging
 
 from ..model import Activity, Event, File, Tag
 from ..schema import EventCreateRequest, EventUpdateRequest
-from ..utils import ensure_user_owns_resource
+from ..utils import ensure_user_owns_resource, handle_update_files, handle_update_resources
 from .account import read as read_accounts
 from .tag import read as read_tags
 
@@ -44,7 +44,11 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
     logger.info("Updating event: %s with %s", event_id, data)
     # Format and check tags
     if tags := data.pop("tags", []):
-        data["tags"] = [Tag.get(id=t) for t in tags]
+        data["tags"] = [Tag.get(id=t["id"]) for t in tags]
+    if files := data.pop("files", []):
+        data["files"] = handle_update_files(files, File)
+    if activities := data.pop("activities", []):
+        data["activities"] = handle_update_resources(activities, event.activities, Activity)
     result = event.update(**data)
     logger.info("Updated event: %s", event_id)
     return result

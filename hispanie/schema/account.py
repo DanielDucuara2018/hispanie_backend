@@ -21,7 +21,7 @@ class ValidateTokenRequest(BaseModel):
 
 
 class ResetPasswordRequest(ValidateTokenRequest):
-    old_password: str
+    # old_password: str
     new_password: str
 
 

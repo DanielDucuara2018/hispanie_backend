@@ -1,16 +1,17 @@
 from .account import Account, AccountType
 from .activity import Activity
-from .base import Base
+from .base import Base, T
 from .business import Business, BusinessCategory
 from .business_tag import BusinessTag
 from .event import Event, EventCategory
 from .event_tag import EventTag
-from .file import File
+from .file import File, FileCategory
 from .reset_token import ResetToken
 from .social_network import SocialNetwork
 from .tag import Tag
 
 __all__ = [
+    "T",
     "Account",
     "AccountType",
     "Activity",
@@ -22,6 +23,7 @@ __all__ = [
     "EventCategory",
     "EventTag",
     "File",
+    "FileCategory",
     "ResetToken",
     "SocialNetwork",
     "Tag",
