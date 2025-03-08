@@ -63,19 +63,3 @@ def delete(event_id: str, account_id: str) -> Business:
     result = business.delete()
     logger.info("Deleted business: %s", event_id)
     return result
-
-
-# def handle_update_social_networks(
-#     new_social_networks: list[dict[str, Any]], old_social_networks: list[SocialNetwork]
-# ):
-#     old_social_network_ids = {sn.id for sn in old_social_networks}
-#     new_social_network_ids = {sn["id"] for sn in new_social_networks if "id" in sn}
-
-#     social_network_ids_to_delete = old_social_network_ids - new_social_network_ids
-#     social_network_ids_to_create = [sn for sn in new_social_networks if "id" not in sn]
-
-#     [SocialNetwork.get(id=id).delete() for id in social_network_ids_to_delete]
-
-#     return [SocialNetwork(**sn) for sn in social_network_ids_to_create] + [
-#         SocialNetwork.get(id=id) for id in new_social_network_ids
-#     ]

@@ -77,6 +77,8 @@ def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
     data = account_data.model_dump(exclude_none=True)
     if files := data.pop("files", []):
         data["files"] = handle_update_files(files, File)
+    if old_password := data.pop("old_password", ""):
+        authenticate_account(account.username, old_password)
     result = account.update(**data)
     logger.info("Updated account %s", account_id)
     return result
@@ -167,10 +169,7 @@ def handle_reset_password(token: str, new_password: str) -> None:
     if not accounts:
         raise HTTPException(status_code=404, detail="account not found")
 
-    account = accounts[0]
-    # account = authenticate_account(account.username, old_password)
-
-    result = account.update(password=new_password)
+    result = accounts[0].update(password=new_password)
     logger.info("Reseted password for account %s", result.id)
     set_reset_token_as_used(token)
 
