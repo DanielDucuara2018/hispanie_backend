@@ -14,7 +14,7 @@ class SocialNetworkCreateRequest(BaseModel):
 class SocialNetworkUpdateRequest(BaseModel):
     """Schema for adding a new Social Network ulr."""
 
-    id: str | None = Field(None, min_length=3, max_length=100)
+    id: str | None = Field(None, pattern=r"^social_network-[0-9a-f]{32}$")
     url: str | None = Field(None, min_length=3, max_length=1000)
     category: SocialNetworkCategory
 
