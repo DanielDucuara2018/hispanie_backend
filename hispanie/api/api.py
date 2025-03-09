@@ -14,6 +14,7 @@ from .routers.business import router as business_router
 from .routers.event import router as event_router
 from .routers.file import router as file_router
 from .routers.tag import router as tag_router
+from .routers.ticket import router as ticket_router
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -59,6 +60,7 @@ app.include_router(business_router, prefix=API_PREFIX)
 app.include_router(event_router, prefix=API_PREFIX)
 app.include_router(file_router, prefix=API_PREFIX)
 app.include_router(tag_router, prefix=API_PREFIX)
+app.include_router(ticket_router, prefix=API_PREFIX)
 
 
 @app.on_event("startup")

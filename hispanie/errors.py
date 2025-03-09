@@ -59,3 +59,9 @@ class NoActivityFound(Error):
     code = 1005
     reason = "no-activity-found"
     description = "No activity found in DB."
+
+
+class NoTicketFound(Error):
+    code = 1006
+    reason = "no-ticket-found"
+    description = "No ticket found in DB."
