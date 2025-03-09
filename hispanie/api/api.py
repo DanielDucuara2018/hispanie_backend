@@ -58,7 +58,7 @@ async def startup_event():
 
     account = Account.find(username=Config.account.username)
     if account:
-        logger.info("Account admin.hispanie already exists %s", account[0].id)
+        logger.info("Account %s already exists %s", Config.account.username, account[0].id)
         return
 
     account = Account(
@@ -69,7 +69,7 @@ async def startup_event():
         description=Config.account.description,
         type=AccountType.ADMIN,
     ).create()
-    logger.info("Account admin.hispanie was just created with id %s", account.id)
+    logger.info("Account %s was just created with id %s", Config.account.username, account.id)
 
 
 @app.get("/api/v1")
