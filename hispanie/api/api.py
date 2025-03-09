@@ -50,6 +50,28 @@ app.include_router(file_router, prefix=API_PREFIX)
 app.include_router(tag_router, prefix=API_PREFIX)
 
 
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Creating hispanie admin account")
+    from ..config import Config
+    from ..model import Account, AccountType
+
+    account = Account.find(username=Config.account.username)
+    if account:
+        logger.info("Account %s already exists %s", Config.account.username, account[0].id)
+        return
+
+    account = Account(
+        username=Config.account.username,
+        password=Config.account.password,
+        email=Config.account.email,
+        phone=Config.account.phone,
+        description=Config.account.description,
+        type=AccountType.ADMIN,
+    ).create()
+    logger.info("Account %s was just created with id %s", Config.account.username, account.id)
+
+
 @app.get("/api/v1")
 async def root():
     return {"message": "Welcome to hispanie app"}
