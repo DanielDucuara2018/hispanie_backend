@@ -48,18 +48,17 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
     data = event_data.model_dump(exclude_none=True)
     logger.info("Updating event: %s with %s", event_id, data)
     # Format and check tags
-    if tags := data.pop("tags", []):
-        data["tags"] = [Tag.get(id=t["id"]) for t in tags]
-    if files := data.pop("files", []):
-        data["files"] = handle_update_files(files, File)
     if activities := data.pop("activities", []):
         data["activities"] = handle_update_resources(
             activities,
             event.activities,
             Activity,
             remove_duplicates=True,
-            key_duplicates="name",
         )
+    if files := data.pop("files", []):
+        data["files"] = handle_update_files(files, File)
+    if tags := data.pop("tags", []):
+        data["tags"] = [Tag.get(id=t["id"]) for t in tags]
     result = event.update(**data)
     logger.info("Updated event: %s", event_id)
     return result

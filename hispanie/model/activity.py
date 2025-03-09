@@ -26,7 +26,7 @@ class Activity(Base, Resource):
 
     __table_args__ = (
         CheckConstraint("end_date > start_date", name="check_end_date_after_start_date"),
-        UniqueConstraint("event_id", "name", name="unique_name_for_event"),
+        UniqueConstraint("event_id", "name", name="unique_activity_name_for_event"),
     )
 
     # relationships

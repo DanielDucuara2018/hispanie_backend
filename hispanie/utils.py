@@ -123,7 +123,7 @@ def handle_update_resources(
     old_resources: list["T"],
     model: Type["T"],
     remove_duplicates: bool = False,
-    key_duplicates: str | None = None,
+    key_duplicates: str = "name",
 ) -> list["T"]:
     old_resource_ids = {sn.id for sn in old_resources}
     new_resource_ids = {sn["id"] for sn in new_resources if "id" in sn}
@@ -137,7 +137,7 @@ def handle_update_resources(
         model.get(id=id) for id in new_resource_ids
     ]
 
-    if remove_duplicates and key_duplicates:
+    if result and remove_duplicates:
         return delete_duplicates(result, key_duplicates)
 
     return result
@@ -145,7 +145,9 @@ def handle_update_resources(
 
 def delete_duplicates(list_objects: list, key: str) -> list:
     """Delete duplicate items in a list of objects based on given key."""
-    if isinstance(list_objects[0], dict):
+    if not list_objects:
+        return []
+    elif isinstance(list_objects[0], dict):
         uniques = {el[key]: el for el in list_objects}
     else:
         uniques = {getattr(el, key): el for el in list_objects}
