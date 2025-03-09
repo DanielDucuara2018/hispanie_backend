@@ -5,18 +5,14 @@ from ..typing import CustomDateTime
 
 
 class SocialNetworkCreateRequest(BaseModel):
-    """
-    Schema for adding a new Social Network ulr.
-    """
+    """Schema for adding a new Social Network ulr."""
 
     url: str = Field(..., min_length=3, max_length=1000)
     category: SocialNetworkCategory
 
 
 class SocialNetworkBasicResponse(BaseModel):
-    """
-    Schema for returning File data.
-    """
+    """Schema for returning File data."""
 
     model_config = ConfigDict(from_attributes=True)
 

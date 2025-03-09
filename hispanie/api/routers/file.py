@@ -33,9 +33,7 @@ async def upload_presigned_url(
     content_type: str,
     _: None = Depends(get_current_account),
 ):
-    """
-    Create a new event for the authenticated account.
-    """
+    """Create a new event for the authenticated account."""
     try:
         return {"url": generate_upload_presigned_url(filename, content_type)}
     except Exception as e:
@@ -49,9 +47,7 @@ async def download_presigned_url(
     filename: str,
     _: None = Depends(get_current_account),
 ):
-    """
-    Create a new event for the authenticated account.
-    """
+    """Create a new event for the authenticated account."""
     try:
         return {"url": generate_download_presigned_url(filename)}
     except Exception as e:
@@ -64,9 +60,7 @@ async def create(
     file_data: FileCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Create a new event for the authenticated account.
-    """
+    """Create a new event for the authenticated account."""
     try:
         return create_file(file_data, current_account.id)
     except Exception as e:
@@ -79,9 +73,7 @@ async def create(
 async def read_private(
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Retrieve all events for the authenticated account.
-    """
+    """Retrieve all events for the authenticated account."""
     try:
         return read_files(account_id=current_account.id)
     except Exception as e:
@@ -92,9 +84,7 @@ async def read_private(
 # Read Events using token
 @router.get("/public/read", response_model=list[FileResponse])
 async def read_public():
-    """
-    Retrieve all events for the authenticated account.
-    """
+    """Retrieve all events for the authenticated account."""
     try:
         return read_files(is_public=True)
     except Exception as e:
@@ -108,9 +98,7 @@ async def update(
     event_update: FileUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Update an event by its ID. The event must belong to the current account.
-    """
+    """Update an event by its ID. The event must belong to the current account."""
     try:
         return update_file(file_id, current_account.id, event_update)
     except Exception as e:
@@ -123,9 +111,7 @@ async def delete(
     file_id: str,
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Delete an event by its ID. The event must belong to the current account.
-    """
+    """Delete an event by its ID. The event must belong to the current account."""
     try:
         return delete_file(file_id, current_account.id)
     except Exception as e:

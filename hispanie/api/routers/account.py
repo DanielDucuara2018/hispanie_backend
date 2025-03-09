@@ -72,9 +72,7 @@ async def login(
     ),
     refresh_token_id: str | None = Cookie(None),
 ) -> JSONResponse:
-    """
-    Authenticate a account and return an access token.
-    """
+    """Authenticate a account and return an access token."""
     account = authenticate_account(form_data.username, form_data.password)
     if not account:
         raise HTTPException(
@@ -113,9 +111,7 @@ async def login(
 # TODO add token account validation
 @router.post("/private/logout")
 async def logout(response: Response, _: None = Depends(get_current_account)) -> None:
-    """
-    log out an account and delete the cookies info.
-    """
+    """Log out an account and delete the cookies info."""
     response.delete_cookie(key=TOKEN_KEY_NAME)
 
 
@@ -129,9 +125,7 @@ async def forgot_password(
     request: ForgotPasswordRequest,
     background_tasks: BackgroundTasks,
 ) -> None:
-    """
-    Handle forgotten password request for a given account
-    """
+    """Handle forgotten password request for a given account."""
     try:
         handle_forgotten_password(request.email, background_tasks)
     except Exception as e:
@@ -145,9 +139,7 @@ async def forgot_password(
 async def reset_password(
     request: ResetPasswordRequest,
 ) -> None:
-    """
-    Handle reset password request for a given account
-    """
+    """Handle reset password request for a given account."""
     try:
         handle_reset_password(**request.model_dump(exclude_none=True))
     except Exception as e:
@@ -161,9 +153,7 @@ async def reset_password(
 async def create(
     account_data: AccountCreateRequest,  # _: None = Depends(get_current_account)
 ) -> AccountResponse:
-    """
-    Create a new account with the provided data.
-    """
+    """Create a new account with the provided data."""
     try:
         return create_account(account_data)
     except Exception as e:
@@ -178,9 +168,7 @@ async def read(
     current_account: AccountResponse = Depends(get_current_account),
     show_all: Annotated[bool, Query(description="Set to true to list all users if admin")] = False,
 ) -> AccountResponse | list[AccountResponse]:
-    """
-    Get current user data or list all users if admin.
-    """
+    """Get current user data or list all users if admin."""
     if show_all:
         ensure_admin_privileges(current_account)
         return read_accounts()  # Replace with the method to fetch all users
@@ -195,9 +183,7 @@ async def update(
     account_data: AccountUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ) -> AccountResponse:
-    """
-    Update the current account with the provided data.
-    """
+    """Update the current account with the provided data."""
     try:
         return update_account(current_account.id, account_data)
     except Exception as e:
@@ -210,9 +196,7 @@ async def update(
 async def delete(
     current_account: AccountResponse = Depends(get_current_account),
 ) -> AccountResponse:
-    """
-    Delete the current account.
-    """
+    """Delete the current account."""
     try:
         return delete_account(current_account.id)
     except Exception as e:

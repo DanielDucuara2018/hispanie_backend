@@ -52,6 +52,15 @@ class AWS:
     region: str
 
 
+@dataclass
+class Account:
+    username: str
+    password: str
+    email: str
+    phone: str
+    description: str
+
+
 @load_configuration
 @dataclass
 class Config:
@@ -59,6 +68,7 @@ class Config:
     jwt: JWT
     email: Email
     aws: AWS
+    account: Account
 
 
 def bootstrap_configuration(path: str = ROOT.joinpath("hispanie.ini")) -> None:

@@ -5,10 +5,7 @@ from .resource import Resource
 
 
 class Entity(Resource):
-    """
-    Entity model for managing geographical and contact information.
-    Extends the Resource base class.
-    """
+    """Entity model for managing geographical and contact information."""
 
     # General information
     name: Mapped[str] = mapped_column(String, nullable=False)

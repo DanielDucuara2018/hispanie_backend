@@ -5,17 +5,13 @@ from ..typing import CustomDateTime
 
 
 class FileGeneratePresignedUrlResponse(BaseModel):
-    """
-    Schema for creating a presigned url to upload on AWS.
-    """
+    """Schema for creating a presigned url to upload on AWS."""
 
     url: str
 
 
 class FileCreateRequest(BaseModel):
-    """
-    Schema for creating a new File.
-    """
+    """Schema for creating a new File."""
 
     filename: str = Field(..., min_length=3, max_length=100)
     content_type: str = Field(..., min_length=3, max_length=100)
@@ -26,9 +22,7 @@ class FileCreateRequest(BaseModel):
 
 
 class FileUpdateRequest(BaseModel):
-    """
-    Schema for updating an existing File.
-    """
+    """Schema for updating an existing File."""
 
     filename: str | None = Field(None, min_length=3, max_length=100)
     content_type: str | None = Field(None, min_length=3, max_length=100)
@@ -40,9 +34,7 @@ class FileUpdateRequest(BaseModel):
 
 # Schema for Account Response
 class FileResponse(BaseModel):
-    """
-    Schema for returning File data.
-    """
+    """Schema for returning File data."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -65,9 +57,7 @@ class FileResponse(BaseModel):
 
 
 class FileBasicResponse(BaseModel):
-    """
-    Schema for returning File data.
-    """
+    """Schema for returning File data."""
 
     model_config = ConfigDict(from_attributes=True)
 

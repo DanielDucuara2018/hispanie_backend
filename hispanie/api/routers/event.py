@@ -18,9 +18,7 @@ async def create(
     event_data: EventCreateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Create a new event for the authenticated account.
-    """
+    """Create a new event for the authenticated account."""
     try:
         return create_event(event_data, current_account.id)
     except Exception as e:
@@ -32,9 +30,7 @@ async def create(
 async def read_private(
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Retrieve all events for the authenticated account.
-    """
+    """Retrieve all events for the authenticated account."""
     try:
         return read_events(account_id=current_account.id)
     except Exception as e:
@@ -44,9 +40,7 @@ async def read_private(
 # Read Events using token
 @router.get("/public/read", response_model=list[EventResponse])
 async def read_public():
-    """
-    Retrieve all events for the authenticated account.
-    """
+    """Retrieve all events for the authenticated account."""
     try:
         return read_events(is_public=True)
     except Exception as e:
@@ -60,9 +54,7 @@ async def update(
     event_update: EventUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Update an event by its ID. The event must belong to the current account.
-    """
+    """Update an event by its ID. The event must belong to the current account."""
     try:
         return update_event(event_id, current_account.id, event_update)
     except Exception as e:
@@ -75,9 +67,7 @@ async def delete(
     event_id: str,
     current_account: AccountResponse = Depends(get_current_account),
 ):
-    """
-    Delete an event by its ID. The event must belong to the current account.
-    """
+    """Delete an event by its ID. The event must belong to the current account."""
     try:
         return delete_event(event_id, current_account.id)
     except Exception as e:

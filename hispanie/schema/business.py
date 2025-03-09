@@ -5,9 +5,7 @@ from ..typing import CustomDateTime
 
 
 class BusinessCreateRequest(BaseModel):
-    """
-    Schema for creating a new Business.
-    """
+    """Schema for creating a new Business."""
 
     name: str = Field(..., min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
@@ -42,9 +40,7 @@ class BusinessCreateRequest(BaseModel):
 
 
 class BusinessUpdateRequest(BaseModel):
-    """
-    Schema for updating an existing Business.
-    """
+    """Schema for updating an existing Business."""
 
     name: str | None = Field(None, min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
@@ -76,9 +72,7 @@ class BusinessUpdateRequest(BaseModel):
 
 
 class BusinessResponse(BaseModel):
-    """
-    Schema for returning Business data.
-    """
+    """Schema for returning Business data."""
 
     model_config = ConfigDict(from_attributes=True)
 
