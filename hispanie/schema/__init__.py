@@ -8,7 +8,6 @@ from .account import (
     ValidateTokenRequest,
 )
 from .activity import (
-    ActivityBasicCreateRequest,
     ActivityCreateRequest,
     ActivityResponse,
     ActivityUpdateRequest,
@@ -22,12 +21,12 @@ from .file import (
     FileUpdateRequest,
 )
 from .tag import TagBasicResponse, TagCreateRequest, TagResponse, TagUpdateRequest
+from .ticket import TicketCreateRequest, TicketResponse, TicketUpdateRequest
 
 __all__ = [
     "AccountCreateRequest",
     "AccountResponse",
     "AccountUpdateRequest",
-    "ActivityBasicCreateRequest",
     "ActivityCreateRequest",
     "ActivityResponse",
     "ActivityUpdateRequest",
@@ -47,6 +46,9 @@ __all__ = [
     "TagCreateRequest",
     "TagResponse",
     "TagUpdateRequest",
+    "TicketCreateRequest",
+    "TicketResponse",
+    "TicketUpdateRequest",
     "Token",
     "ValidateTokenRequest",
 ]
