@@ -65,7 +65,7 @@ class EventUpdateRequest(BaseModel):
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
     activities: list["ActivityBasicCreateRequest"] | None = Field(
-        default_factory=None,
+        default=None,
         description="List of activities associated with the event",
     )
     files: list["FileUpdateRequest"] | None = Field(
