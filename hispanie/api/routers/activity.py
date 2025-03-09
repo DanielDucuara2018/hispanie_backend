@@ -40,7 +40,6 @@ async def read(
         raise HTTPException(status_code=400, detail=f"Error retrieving activities: {str(e)}")
 
 
-# Update Activity
 @router.put("/private/update/{activity_id}", response_model=ActivityResponse)
 async def update(
     activity_id: str,

@@ -5,24 +5,11 @@ from pydantic import BaseModel, ConfigDict, Field
 from ..typing import CustomDateTime
 
 
-class ActivityBasicCreateRequest(BaseModel):
-    """Schema for creating a new activity without event_id."""
-
-    name: str = Field(..., min_length=1, max_length=500, description="Unique name of the activity.")
-    description: str | None = Field(None, max_length=500)
-    start_date: datetime = Field(
-        ..., description="Start date of the activity", examples=["2025-03-09T11:40:22.503Z"]
-    )
-    end_date: datetime = Field(
-        ..., description="End date of the activity", examples=["2025-03-15T11:40:22.503Z"]
-    )
-
-
 class ActivityCreateRequest(BaseModel):
     """Schema for creating a new activity."""
 
     name: str = Field(..., min_length=1, max_length=500, description="Unique name of the activity.")
-    event_id: str = Field(..., pattern=r"^event-[0-9a-f]{32}$")
+    event_id: str | None = Field(default=None, pattern=r"^event-[0-9a-f]{32}$")
     description: str | None = Field(None, max_length=500)
     start_date: datetime = Field(..., description="Start date of the activity")
     end_date: datetime = Field(..., description="End date of the activity")
