@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar
 import bcrypt
 from apischema import deserialize
 from fastapi import HTTPException, Request, status
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
+from fastapi.openapi.models import OAuthFlowPassword, OAuthFlows
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 
@@ -32,7 +32,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         self.token_key_name = token_key_name
         if not scopes:
             scopes = {}
-        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
+        flows = OAuthFlows(password=OAuthFlowPassword(tokenUrl=tokenUrl, scopes=scopes))
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
@@ -98,7 +98,7 @@ def ensure_user_owns_resource(current_account_id: str, resource_owner_id: str) -
         raise Exception("You do not have permission to access this resource.")
 
 
-def handle_update_files(files: list[dict[str, Any]], model: "T") -> list["T"]:
+def handle_update_files(files: list[dict[str, Any]], model: Type["T"]) -> list["T"]:
     categories = defaultdict(list)
     for item in files:
         categories[item["category"]].append(item)
@@ -119,8 +119,8 @@ def handle_update_files(files: list[dict[str, Any]], model: "T") -> list["T"]:
 
 
 def handle_update_resources(
-    new_resources: list[dict[str, Any]], old_resources: list["T"], model: "T"
-):
+    new_resources: list[dict[str, Any]], old_resources: list["T"], model: Type["T"]
+) -> list["T"]:
     old_resource_ids = {sn.id for sn in old_resources}
     new_resource_ids = {sn["id"] for sn in new_resources if "id" in sn}
 
@@ -132,6 +132,15 @@ def handle_update_resources(
     return [model(**sn) for sn in resource_ids_to_create] + [
         model.get(id=id) for id in new_resource_ids
     ]
+
+
+def remove_duplicates(list_objects: list, key: str) -> list:
+    """Remove duplicate items in a list of objects based on given key."""
+    if isinstance(list_objects[0], dict):
+        uniques = {el[key]: el for el in list_objects}
+    else:
+        uniques = {getattr(el, key): el for el in list_objects}
+    return list(uniques.values())
 
 
 def to_list(value: Any) -> list[Any]:

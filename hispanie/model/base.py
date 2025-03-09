@@ -2,7 +2,7 @@ from datetime import date
 from typing import Any, Optional, Type, TypeVar
 
 from sqlalchemy import ARRAY, Date, cast
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 from hispanie import db
@@ -15,6 +15,8 @@ T = TypeVar("T", bound="Base")
 class Base(DeclarativeBase):
     __errors__: dict[str, type[Error]] = {}
 
+    id: Optional[Mapped[str]]
+
     @classmethod
     def find(
         cls: Type[T],
@@ -22,7 +24,8 @@ class Base(DeclarativeBase):
         joins: Optional[list[DeclarativeMeta]] = None,
         **filters,
     ) -> list[T]:
-        query = db.session.query(cls)
+        with db.session_scope() as session:
+            query = session.query(cls)
 
         if joins:
             for jn in joins:
@@ -60,7 +63,8 @@ class Base(DeclarativeBase):
 
     @classmethod
     def get(cls: Type[T], **kwargs) -> T:
-        query = db.session.query(cls)
+        with db.session_scope() as session:
+            query = session.query(cls)
         if not (result := query.get(kwargs)):
             if error := cls.__errors__.get("_error"):
                 raise error(**kwargs)
@@ -68,18 +72,18 @@ class Base(DeclarativeBase):
         return result
 
     def update(self: T, force_update: bool = False, **kwargs) -> T:
-        for key, value in kwargs.items():
-            if force_update or value is not None:
-                setattr(self, key, value)
-        db.session.commit()
+        with db.session_scope():
+            for key, value in kwargs.items():
+                if force_update or value is not None:
+                    setattr(self, key, value)
         return self
 
     def create(self: T) -> T:
-        db.session.add(self)
-        db.session.commit()
+        with db.session_scope() as session:
+            session.add(self)
         return self
 
     def delete(self: T) -> T:
-        db.session.delete(self)
-        db.session.commit()
+        with db.session_scope() as session:
+            session.delete(self)
         return self

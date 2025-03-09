@@ -1,4 +1,5 @@
 import logging
+from typing import overload
 
 from ..model import Activity, Event
 from ..schema import ActivityCreateRequest, ActivityUpdateRequest
@@ -7,15 +8,23 @@ logger = logging.getLogger(__name__)
 
 
 def create(activity_data: ActivityCreateRequest) -> Activity:
-    logger.info("Adding new activity: %s", activity_data)
-    data = activity_data.model_dump()
     # Check event
-    Event.get(id=data["event_id"])
-    activity = Activity(**data).create()
+    Event.get(id=activity_data.event_id)
+
+    if activities := read(event_id=activity_data.event_id, name=activity_data.name):
+        logger.info("Activity already exists: %s", activities[0].id)
+        return activities[0]
+
+    logger.info("Adding new activity: %s", activity_data)
+    activity = Activity(**activity_data.model_dump()).create()
     logger.info("Added new activity: %s", activity.id)
     return activity
 
 
+@overload
+def read(activity_id: str) -> Activity: ...
+@overload
+def read(**kwargs) -> list[Activity]: ...
 def read(activity_id: str | None = None, **kwargs) -> Activity | list[Activity]:
     if activity_id:
         logger.info("Reading activity: %s", activity_id)

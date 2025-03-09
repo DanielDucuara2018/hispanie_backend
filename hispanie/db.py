@@ -1,9 +1,12 @@
 import logging
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 
+from sqlalchemy import text
 from sqlalchemy.engine import create_engine
 from sqlalchemy.engine.base import Connection, Engine
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from alembic.command import upgrade
@@ -13,6 +16,7 @@ from alembic.script import ScriptDirectory
 from hispanie.model import Base
 
 from .config import Database
+from .errors import DBError
 
 ROOT = Path(__file__).parents[1]
 ALEMBIC_PATH = ROOT.joinpath("alembic")
@@ -79,7 +83,7 @@ def update(conn: Connection, table_name: str, dry_run: bool = False):
     exists = True
     try:
         with conn.begin_nested():
-            conn.execute(f"""SELECT 1 FROM {table_name} LIMIT 1""")
+            conn.execute(text(f"""SELECT 1 FROM {table_name} LIMIT 1"""))
     except Exception:  # TODO find the right exception
         exists = False
 
@@ -105,7 +109,7 @@ def initialize(update_schema: bool = False) -> None:
     try:
         with engine.connect() as conn:
             with conn.begin_nested():
-                conn.execute(f"""SELECT 1 FROM {Config.database.ref_table} LIMIT 1""")
+                conn.execute(text(f"""SELECT 1 FROM {Config.database.ref_table} LIMIT 1"""))
     except Exception:  # TODO find the right exception
         exists = False
 
@@ -120,3 +124,15 @@ def initialize(update_schema: bool = False) -> None:
 
 
 session = open_session(init())
+
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    try:
+        yield session
+        session.commit()
+    except SQLAlchemyError as e:
+        session.rollback()
+        logger.error(f"Session rollback due to exception: {e}")
+        raise DBError()
