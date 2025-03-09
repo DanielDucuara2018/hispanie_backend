@@ -21,7 +21,6 @@ class ValidateTokenRequest(BaseModel):
 
 
 class ResetPasswordRequest(ValidateTokenRequest):
-    old_password: str
     new_password: str
 
 
@@ -43,10 +42,11 @@ class AccountUpdateRequest(BaseModel):
 
     username: str | None = Field(None, min_length=3, max_length=50)
     email: EmailStr | None = Field(None, description="Valid email address")
+    old_password: str | None = Field(None, min_length=6, max_length=100)
     password: str | None = Field(None, min_length=6, max_length=100)
     type: AccountType | None = None
     description: str | None = Field(None, min_length=5, max_length=1000)
-    files: list["FileCreateRequest"] | None = Field(
+    files: list["FileUpdateRequest"] | None = Field(
         default=None, description="List of files associated with the account"
     )
 
@@ -71,4 +71,4 @@ class AccountResponse(BaseModel):
 
 from .business import BusinessResponse  # noqa: E402
 from .event import EventResponse  # noqa: E402
-from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
+from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402

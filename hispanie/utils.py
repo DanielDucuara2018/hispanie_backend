@@ -1,6 +1,7 @@
 import secrets
+from collections import defaultdict
 from dataclasses import fields
-from typing import Any, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar
 
 import bcrypt
 from apischema import deserialize
@@ -8,6 +9,9 @@ from fastapi import HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
+
+if TYPE_CHECKING:
+    from .model import T
 
 _config_fields: dict[Type, Optional[Any]] = {}
 
@@ -92,6 +96,42 @@ def ensure_user_owns_resource(current_account_id: str, resource_owner_id: str) -
     """Raise an exception if the current account does not own the resource."""
     if current_account_id != resource_owner_id:
         raise Exception("You do not have permission to access this resource.")
+
+
+def handle_update_files(files: list[dict[str, Any]], model: "T") -> list["T"]:
+    categories = defaultdict(list)
+    for item in files:
+        categories[item["category"]].append(item)
+
+    filtered_data = []
+    for _, items in categories.items():
+        without_id = [item for item in items if "id" not in item]
+        with_id = [item for item in items if "id" in item]
+
+        if without_id:
+            filtered_data.append(model(**without_id[-1]))
+            if with_id:
+                [model.get(id=f["id"]).delete() for f in with_id]
+        else:
+            filtered_data.extend([model.get(id=f["id"]) for f in with_id])
+
+    return filtered_data
+
+
+def handle_update_resources(
+    new_resources: list[dict[str, Any]], old_resources: list["T"], model: "T"
+):
+    old_resource_ids = {sn.id for sn in old_resources}
+    new_resource_ids = {sn["id"] for sn in new_resources if "id" in sn}
+
+    resource_ids_to_delete = old_resource_ids - new_resource_ids
+    resource_ids_to_create = [sn for sn in new_resources if "id" not in sn]
+
+    [model.get(id=id).delete() for id in resource_ids_to_delete]
+
+    return [model(**sn) for sn in resource_ids_to_create] + [
+        model.get(id=id) for id in new_resource_ids
+    ]
 
 
 def to_list(value: Any) -> list[Any]:

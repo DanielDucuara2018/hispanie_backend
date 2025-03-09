@@ -7,9 +7,9 @@ from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
 
 from ..config import Config
-from ..model import Account, AccountType, ResetToken
+from ..model import Account, AccountType, File, ResetToken
 from ..schema import AccountCreateRequest, AccountUpdateRequest
-from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash
+from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash, handle_update_files
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,12 @@ def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
 def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
     logger.info("Updating %s with data %s", account_id, account_data)
     account = Account.get(id=account_id)
-    result = account.update(**account_data.model_dump(exclude_none=True))
+    data = account_data.model_dump(exclude_none=True)
+    if files := data.pop("files", []):
+        data["files"] = handle_update_files(files, File)
+    if old_password := data.pop("old_password", ""):
+        authenticate_account(account.username, old_password)
+    result = account.update(**data)
     logger.info("Updated account %s", account_id)
     return result
 
@@ -149,7 +154,7 @@ def handle_forgotten_password(email: str, background_tasks: BackgroundTasks) -> 
     logger.info("Preparing email for account %s to email %s", account.id, account.email)
 
 
-def handle_reset_password(token: str, old_password: str, new_password: str) -> None:
+def handle_reset_password(token: str, new_password: str) -> None:
     logger.info("Reseting password")
 
     is_used = is_reset_token_used(token)
@@ -164,10 +169,7 @@ def handle_reset_password(token: str, old_password: str, new_password: str) -> N
     if not accounts:
         raise HTTPException(status_code=404, detail="account not found")
 
-    account = accounts[0]
-    account = authenticate_account(account.username, old_password)
-
-    result = account.update(password=new_password)
+    result = accounts[0].update(password=new_password)
     logger.info("Reseted password for account %s", result.id)
     set_reset_token_as_used(token)
 

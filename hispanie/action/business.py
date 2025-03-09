@@ -2,7 +2,7 @@ import logging
 
 from ..model import Business, File, SocialNetwork
 from ..schema import BusinessCreateRequest, BusinessUpdateRequest
-from ..utils import ensure_user_owns_resource
+from ..utils import ensure_user_owns_resource, handle_update_files, handle_update_resources
 from .account import read as read_accounts
 from .tag import read as read_tags
 
@@ -45,6 +45,12 @@ def update(business_id: str, account_id: str, business_data: BusinessUpdateReque
     # Format and check tags
     if tags := data.pop("tags", []):
         data["tags"] = read_tags(id=[t["id"] for t in tags])
+    if files := data.pop("files", []):
+        data["files"] = handle_update_files(files, File)
+    if social_networks := data.pop("social_networks", []):
+        data["social_networks"] = handle_update_resources(
+            social_networks, business.social_networks, SocialNetwork
+        )
     result = business.update(**data)
     logger.info("Updated business: %s", business_id)
     return result

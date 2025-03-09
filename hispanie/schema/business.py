@@ -5,9 +5,7 @@ from ..typing import CustomDateTime
 
 
 class BusinessCreateRequest(BaseModel):
-    """
-    Schema for creating a new Business.
-    """
+    """Schema for creating a new Business."""
 
     name: str = Field(..., min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
@@ -42,9 +40,7 @@ class BusinessCreateRequest(BaseModel):
 
 
 class BusinessUpdateRequest(BaseModel):
-    """
-    Schema for updating an existing Business.
-    """
+    """Schema for updating an existing Business."""
 
     name: str | None = Field(None, min_length=3, max_length=100)
     email: EmailStr | None = Field(None, description="Valid email address")
@@ -64,21 +60,19 @@ class BusinessUpdateRequest(BaseModel):
     is_public: bool | None = Field(None, description="Whether the business is public or not")
     category: BusinessCategory | None = None
     description: str | None = Field(None, min_length=5, max_length=1000)
-    files: list["FileCreateRequest"] | None = Field(
+    files: list["FileUpdateRequest"] | None = Field(
         default=None, description="List of files associated with the event"
     )
     tags: list["TagBasicResponse"] | None = Field(
         default=None, description="List of tags associated with the event"
     )
-    social_networks: list["SocialNetworkCreateRequest"] | None = Field(
+    social_networks: list["SocialNetworkUpdateRequest"] | None = Field(
         default=None, description="List of URLs associated with the event"
     )
 
 
 class BusinessResponse(BaseModel):
-    """
-    Schema for returning Business data.
-    """
+    """Schema for returning Business data."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -104,6 +98,10 @@ class BusinessResponse(BaseModel):
     update_date: CustomDateTime | None
 
 
-from .file import FileBasicResponse, FileCreateRequest  # noqa: E402
-from .social_network import SocialNetworkBasicResponse, SocialNetworkCreateRequest  # noqa: E402
+from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402
+from .social_network import (  # noqa: E402
+    SocialNetworkBasicResponse,
+    SocialNetworkCreateRequest,
+    SocialNetworkUpdateRequest,
+)
 from .tag import TagBasicResponse  # noqa: E402
