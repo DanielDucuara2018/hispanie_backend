@@ -1,7 +1,6 @@
 import logging
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional
 
 from sqlalchemy import text
 from sqlalchemy.engine import create_engine
@@ -24,7 +23,7 @@ ALEMBIC_PATH = ROOT.joinpath("alembic")
 logger = logging.getLogger(__name__)
 
 
-def get_engine(db: Database, suffix: Optional[str] = None) -> Engine:
+def get_engine(db: Database, suffix: str | None = None) -> Engine:
     sqlalchemy_url = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}"
     if suffix:
         sqlalchemy_url += suffix

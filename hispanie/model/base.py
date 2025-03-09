@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Optional, Type, TypeVar
+from typing import Any, Type, TypeVar
 
 from sqlalchemy import ARRAY, Date, cast
 from sqlalchemy.orm import DeclarativeBase, Mapped
@@ -15,13 +15,13 @@ T = TypeVar("T", bound="Base")
 class Base(DeclarativeBase):
     __errors__: dict[str, type[Error]] = {}
 
-    id: Optional[Mapped[str]]
+    id: Mapped[str] | None
 
     @classmethod
     def find(
         cls: Type[T],
-        filter_defs: Optional[dict[str, Any]] = None,
-        joins: Optional[list[DeclarativeMeta]] = None,
+        filter_defs: dict[str, Any] | None = None,
+        joins: list[DeclarativeMeta] | None = None,
         **filters,
     ) -> list[T]:
         with db.session_scope() as session:

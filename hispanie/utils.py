@@ -119,7 +119,11 @@ def handle_update_files(files: list[dict[str, Any]], model: Type["T"]) -> list["
 
 
 def handle_update_resources(
-    new_resources: list[dict[str, Any]], old_resources: list["T"], model: Type["T"]
+    new_resources: list[dict[str, Any]],
+    old_resources: list["T"],
+    model: Type["T"],
+    remove_duplicates: bool = False,
+    key_duplicates: str | None = None,
 ) -> list["T"]:
     old_resource_ids = {sn.id for sn in old_resources}
     new_resource_ids = {sn["id"] for sn in new_resources if "id" in sn}
@@ -129,13 +133,18 @@ def handle_update_resources(
 
     [model.get(id=id).delete() for id in resource_ids_to_delete]
 
-    return [model(**sn) for sn in resource_ids_to_create] + [
+    result = [model(**sn) for sn in resource_ids_to_create] + [
         model.get(id=id) for id in new_resource_ids
     ]
 
+    if remove_duplicates and key_duplicates:
+        return delete_duplicates(result, key_duplicates)
 
-def remove_duplicates(list_objects: list, key: str) -> list:
-    """Remove duplicate items in a list of objects based on given key."""
+    return result
+
+
+def delete_duplicates(list_objects: list, key: str) -> list:
+    """Delete duplicate items in a list of objects based on given key."""
     if isinstance(list_objects[0], dict):
         uniques = {el[key]: el for el in list_objects}
     else:
