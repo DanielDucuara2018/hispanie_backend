@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from ..model import EventCategory, EventFrecuency
+from ..model import EventCategory, EventFrequency
 from ..typing import CustomDateTime
 
 
@@ -21,7 +21,7 @@ class EventCreateRequest(BaseModel):
     latitude: float = Field(..., ge=-90.0, le=90.0, description="Latitude in decimal degrees")
     longitude: float = Field(..., ge=-180.0, le=180.0, description="Longitude in decimal degrees")
     category: EventCategory
-    frecuency: EventFrecuency
+    frequency: EventFrequency
     is_public: bool = Field(default=False, description="Whether the event is public or not")
     description: str | None = Field(None, max_length=1000)
     start_date: datetime = Field(..., description="Start date of the event")
@@ -59,7 +59,7 @@ class EventUpdateRequest(BaseModel):
         None, ge=-180.0, le=180.0, description="Longitude in decimal degrees"
     )
     category: EventCategory | None = None
-    frecuency: EventFrecuency | None = None
+    frequency: EventFrequency | None = None
     is_public: bool | None = Field(None, description="Whether the event is public or not")
     description: str | None = Field(None, max_length=1000)
     start_date: datetime | None = Field(None, description="Start date of the event")
@@ -96,7 +96,7 @@ class EventResponse(BaseModel):
     latitude: float
     longitude: float
     category: EventCategory
-    frecuency: EventFrecuency
+    frequency: EventFrequency
     is_public: bool
     description: str | None
     start_date: CustomDateTime

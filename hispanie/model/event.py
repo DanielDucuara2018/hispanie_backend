@@ -31,7 +31,7 @@ class EventCategory(Enum):
     DANCE = "dance"
 
 
-class EventFrecuency(Enum):
+class EventFrequency(Enum):
     NONE = "none"
     DAILY = "daily"
     WEEKLY = "weekly"
@@ -50,7 +50,7 @@ class Event(Base, Entity):
 
     end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
-    frecuency: Mapped[EventFrecuency] = mapped_column(SQLAEnum(EventFrecuency), nullable=False)
+    frequency: Mapped[EventFrequency] = mapped_column(SQLAEnum(EventFrequency), nullable=False)
 
     # DONE add change name attr to title ? No
     # DONE add tags, another table or a list of strings ? yes table

@@ -7,7 +7,7 @@ from fastapi_utils.tasks import repeat_every
 
 from ..config import Config
 from ..db import initialize
-from ..model import Account, AccountType, Event, EventFrecuency
+from ..model import Account, AccountType, Event, EventFrequency
 from .routers.account import router as account_router
 from .routers.activity import router as activity_router
 from .routers.business import router as business_router
@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 
 API_PREFIX = "/api/v1"
 
-mapping_frecuency_days = {
-    EventFrecuency.DAILY: "days",
-    EventFrecuency.WEEKLY: "weeks",
-    EventFrecuency.MONTHLY: "months",
+mapping_frequency_days = {
+    EventFrequency.DAILY: "days",
+    EventFrequency.WEEKLY: "weeks",
+    EventFrequency.MONTHLY: "months",
 }
 
 initialize(True)
@@ -86,12 +86,12 @@ async def startup_event():
 async def update_periodic_events() -> None:
     logger.info("Updating periodic events")
     today = datetime.today().replace(tzinfo=timezone.utc)
-    for event in Event.find(**{"!frecuency": EventFrecuency.NONE}):
+    for event in Event.find(**{"!frequency": EventFrequency.NONE}):
         logger.info("%s %s", event.start_date, today)
         if event.start_date > today:
             continue
 
-        timedelta_args = {mapping_frecuency_days[event.frecuency]: 1}
+        timedelta_args = {mapping_frequency_days[event.frequency]: 1}
         event.update(
             start_date=event.start_date + timedelta(**timedelta_args),
             end_date=event.end_date + timedelta(**timedelta_args),
