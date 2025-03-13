@@ -3,7 +3,7 @@ from .activity import Activity
 from .base import Base, T
 from .business import Business, BusinessCategory
 from .business_tag import BusinessTag
-from .event import Event, EventCategory
+from .event import Event, EventCategory, EventFrecuency
 from .event_tag import EventTag
 from .file import File, FileCategory
 from .reset_token import ResetToken
@@ -21,6 +21,7 @@ __all__ = [
     "BusinessTag",
     "Event",
     "EventCategory",
+    "EventFrecuency",
     "EventTag",
     "File",
     "FileCategory",

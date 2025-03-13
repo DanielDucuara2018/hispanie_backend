@@ -1,9 +1,13 @@
 import logging
+from datetime import datetime, timedelta, timezone
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_utils.tasks import repeat_every
 
+from ..config import Config
 from ..db import initialize
+from ..model import Account, AccountType, Event, EventFrecuency
 from .routers.account import router as account_router
 from .routers.activity import router as activity_router
 from .routers.business import router as business_router
@@ -15,9 +19,16 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 
+logger = logging.getLogger(__name__)
+
+
 API_PREFIX = "/api/v1"
 
-logger = logging.getLogger(__name__)
+mapping_frecuency_days = {
+    EventFrecuency.DAILY: "days",
+    EventFrecuency.WEEKLY: "weeks",
+    EventFrecuency.MONTHLY: "months",
+}
 
 initialize(True)
 
@@ -53,8 +64,6 @@ app.include_router(tag_router, prefix=API_PREFIX)
 @app.on_event("startup")
 async def startup_event():
     logger.info("Creating hispanie admin account")
-    from ..config import Config
-    from ..model import Account, AccountType
 
     account = Account.find(username=Config.account.username)
     if account:
@@ -72,6 +81,31 @@ async def startup_event():
     logger.info("Account %s was just created with id %s", Config.account.username, account.id)
 
 
-@app.get("/api/v1")
+@app.on_event("startup")
+@repeat_every(seconds=60 * 60 * 24)  # 1 day
+async def update_periodic_events() -> None:
+    logger.info("Updating periodic events")
+    today = datetime.today().replace(tzinfo=timezone.utc)
+    for event in Event.find(**{"!frecuency": EventFrecuency.NONE}):
+        logger.info("%s %s", event.start_date, today)
+        if event.start_date > today:
+            continue
+
+        timedelta_args = {mapping_frecuency_days[event.frecuency]: 1}
+        event.update(
+            start_date=event.start_date + timedelta(**timedelta_args),
+            end_date=event.end_date + timedelta(**timedelta_args),
+        )
+
+        [
+            activity.update(
+                start_date=activity.start_date + timedelta(**timedelta_args),
+                end_date=activity.end_date + timedelta(**timedelta_args),
+            )
+            for activity in event.activities
+        ]
+
+
+@app.get(API_PREFIX)
 async def root():
     return {"message": "Welcome to hispanie app"}

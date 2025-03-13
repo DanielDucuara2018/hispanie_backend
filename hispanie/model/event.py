@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Float, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -31,6 +31,13 @@ class EventCategory(Enum):
     DANCE = "dance"
 
 
+class EventFrecuency(Enum):
+    NONE = "none"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+
+
 class Event(Base, Entity):
     __tablename__ = "event"
     __errors__ = {"_error": NoEventFound}
@@ -39,11 +46,11 @@ class Event(Base, Entity):
 
     category: Mapped[EventCategory] = mapped_column(SQLAEnum(EventCategory), nullable=False)
 
-    price: Mapped[float] = mapped_column(Float, nullable=False)
-
     start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    frecuency: Mapped[EventFrecuency] = mapped_column(SQLAEnum(EventFrecuency), nullable=False)
 
     # DONE add change name attr to title ? No
     # DONE add tags, another table or a list of strings ? yes table
