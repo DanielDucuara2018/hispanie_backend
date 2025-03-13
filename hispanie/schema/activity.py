@@ -10,8 +10,12 @@ class ActivityBasicCreateRequest(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=500, description="Unique name of the activity.")
     description: str | None = Field(None, max_length=500)
-    start_date: datetime = Field(..., description="Start date of the activity")
-    end_date: datetime = Field(..., description="End date of the activity")
+    start_date: datetime = Field(
+        ..., description="Start date of the activity", examples=["2025-03-09T11:40:22.503Z"]
+    )
+    end_date: datetime = Field(
+        ..., description="End date of the activity", examples=["2025-03-15T11:40:22.503Z"]
+    )
 
 
 class ActivityCreateRequest(BaseModel):
