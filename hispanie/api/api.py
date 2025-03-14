@@ -87,7 +87,7 @@ async def update_periodic_events() -> None:
     logger.info("Updating periodic events")
     today = datetime.today().replace(tzinfo=timezone.utc)
     for event in Event.find(**{"!frequency": EventFrequency.NONE}):
-        if event.start_date > today:
+        if event.end_date > today:
             continue
 
         timedelta_args = {mapping_frequency_days[event.frequency]: 1}
