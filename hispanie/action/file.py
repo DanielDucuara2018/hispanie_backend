@@ -1,4 +1,5 @@
 import logging
+from typing import overload
 
 import boto3
 
@@ -52,6 +53,10 @@ def create(file_data: FileCreateRequest, account_id: str) -> File:
     return file
 
 
+@overload
+def read(file_id: str) -> File: ...
+@overload
+def read(**kwargs) -> list[File]: ...
 def read(file_id: str | None = None, **kwargs) -> File | list[File]:
     if file_id:
         logger.info("Reading %s data", file_id)

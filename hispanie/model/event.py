@@ -57,7 +57,6 @@ class Event(Base, Entity):
     # DONE add tags, another table or a list of strings ? yes table
     # DONE add artists, is it an accounts list with type artists ? no, it's a business
     # DONE add location: str ? latitude, longitude and city can be taken from location ?
-    # DONE Add price: float
     # DONE Add date: datetime or start_date and end_date ?
     # TODO Add interesados, participates ? is a number ?
     # DONE Add url or urls ? in Entity class ? yes and yes

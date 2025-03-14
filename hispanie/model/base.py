@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Type, TypeVar
+from typing import Any, Type, TypeVar, overload
 
 from sqlalchemy import ARRAY, Date, cast
 from sqlalchemy.orm import DeclarativeBase, Mapped
@@ -17,12 +17,28 @@ class Base(DeclarativeBase):
 
     id: Mapped[str] | None
 
+    @overload
+    @classmethod
+    def find(
+        cls: Type[T],
+        filter_defs: dict[str, Any],
+        joins: list[DeclarativeMeta],
+        **filters: Any,
+    ) -> list[T]: ...
+
+    @overload
+    @classmethod
+    def find(
+        cls: Type[T],
+        **filters: Any,
+    ) -> list[T]: ...
+
     @classmethod
     def find(
         cls: Type[T],
         filter_defs: dict[str, Any] | None = None,
         joins: list[DeclarativeMeta] | None = None,
-        **filters,
+        **filters: Any,
     ) -> list[T]:
         with db.session_scope() as session:
             query = session.query(cls)

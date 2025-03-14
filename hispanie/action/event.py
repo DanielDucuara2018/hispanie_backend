@@ -1,4 +1,5 @@
 import logging
+from typing import overload
 
 from ..model import Activity, Event, File, Tag, Ticket
 from ..schema import EventCreateRequest, EventUpdateRequest
@@ -35,6 +36,10 @@ def create(event_data: EventCreateRequest, account_id: str) -> Event:
     return event
 
 
+@overload
+def read(event_id: str) -> Event: ...
+@overload
+def read(**kwargs) -> list[Event]: ...
 def read(event_id: str | None = None, **kwargs) -> Event | list[Event]:
     if event_id:
         logger.info("Reading event: %s", event_id)
@@ -68,10 +73,6 @@ def update(event_id: str, account_id: str, event_data: EventUpdateRequest) -> Ev
             Ticket,
             remove_duplicates=True,
         )
-    if files := data.pop("files", []):
-        data["files"] = handle_update_files(files, File)
-    if tags := data.pop("tags", []):
-        data["tags"] = [Tag.get(id=t["id"]) for t in tags]
     result = event.update(**data)
     logger.info("Updated event: %s", event_id)
     return result
