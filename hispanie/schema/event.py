@@ -26,8 +26,8 @@ class EventCreateRequest(BaseModel):
     description: str | None = Field(None, max_length=1000)
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
-    activities: list["ActivityBasicCreateRequest"] = Field(
-        default_factory=list["ActivityBasicCreateRequest"],
+    activities: list["ActivityCreateRequest"] = Field(
+        default_factory=list["ActivityCreateRequest"],
         description="List of activities associated with the event",
     )
     files: list["FileCreateRequest"] = Field(
@@ -37,6 +37,10 @@ class EventCreateRequest(BaseModel):
     tags: list["TagBasicResponse"] = Field(
         default_factory=list["TagBasicResponse"],
         description="List of tags associated with the event",
+    )
+    tickets: list["TicketCreateRequest"] = Field(
+        default_factory=list["TicketCreateRequest"],
+        description="List of tickets associated with the event",
     )
 
 
@@ -64,7 +68,7 @@ class EventUpdateRequest(BaseModel):
     description: str | None = Field(None, max_length=1000)
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
-    activities: list["ActivityBasicCreateRequest"] | None = Field(
+    activities: list["ActivityUpdateRequest"] | None = Field(
         default=None,
         description="List of activities associated with the event",
     )
@@ -75,6 +79,10 @@ class EventUpdateRequest(BaseModel):
     tags: list["TagBasicResponse"] | None = Field(
         default=None,
         description="List of tags associated with the event",
+    )
+    tickets: list["TicketUpdateRequest"] | None = Field(
+        default=None,
+        description="List of tickets associated with the event",
     )
 
 
@@ -104,10 +112,16 @@ class EventResponse(BaseModel):
     activities: list["ActivityResponse"]
     files: list["FileBasicResponse"]
     tags: list["TagBasicResponse"]
+    tickets: list["TicketResponse"]
     creation_date: CustomDateTime
     update_date: CustomDateTime | None
 
 
-from .activity import ActivityBasicCreateRequest, ActivityResponse  # noqa: E402
+from .activity import (  # noqa: E402
+    ActivityCreateRequest,
+    ActivityResponse,
+    ActivityUpdateRequest,
+)
 from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402
 from .tag import TagBasicResponse  # noqa: E402
+from .ticket import TicketCreateRequest, TicketResponse, TicketUpdateRequest  # noqa: E402

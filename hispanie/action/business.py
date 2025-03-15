@@ -1,4 +1,5 @@
 import logging
+from typing import overload
 
 from ..model import Business, File, SocialNetwork
 from ..schema import BusinessCreateRequest, BusinessUpdateRequest
@@ -28,6 +29,10 @@ def create(business_data: BusinessCreateRequest, account_id: str) -> Business:
     return business
 
 
+@overload
+def read(business_id: str) -> Business: ...
+@overload
+def read(**kwargs) -> list[Business]: ...
 def read(business_id: str | None = None, **kwargs) -> Business | list[Business]:
     if business_id:
         logger.info("Reading business: %s", business_id)

@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import overload
 
 from fastapi import BackgroundTasks, Depends, HTTPException, status
-from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
+from pydantic import SecretStr
 
 from ..config import Config
 from ..model import Account, AccountType, File, ResetToken
@@ -18,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 EMAIL_CONFIG = ConnectionConfig(
     MAIL_USERNAME=Config.email.username,
-    MAIL_PASSWORD=Config.email.password,
+    MAIL_PASSWORD=SecretStr(Config.email.password),
     MAIL_FROM=Config.email.address,
     MAIL_PORT=int(Config.email.port),
     MAIL_SERVER=Config.email.server,
@@ -54,18 +56,21 @@ def create(account_data: AccountCreateRequest) -> Account:
     return account
 
 
-# get account
-
-
+@overload
+def read(account_id: str) -> Account: ...
+@overload
+def read(**kwargs) -> list[Account]: ...
 def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
     if account_id:
-        logger.info("Reading %s data", account_id)
-        result = Account.get(id=account_id)
+        logger.info("Reading account: %s", account_id)
+        account = Account.get(id=account_id)
+        logger.info("Data found for account %s", account.id)
+        return account
     else:
-        logger.info("Reading all data")
-        result = Account.find(**kwargs)
-    logger.info("Data found for account %s", account_id or kwargs)
-    return result
+        logger.info("Reading all accounts with filters %s", kwargs)
+        accounts = Account.find(**kwargs)
+        logger.info("Data found for account %s", [ac.id for ac in accounts])
+        return accounts
 
 
 # update account
@@ -181,7 +186,7 @@ async def send_reset_email(account: Account, token: str) -> None:
         subject="Password Reset Request",
         recipients=[account.email],
         body=f"Please click the following link to reset your password: {reset_url}",
-        subtype="html",
+        subtype=MessageType.html,
     )
     fm = FastMail(EMAIL_CONFIG)
     await fm.send_message(message)

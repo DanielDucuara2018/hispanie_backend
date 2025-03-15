@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from .activity import Activity
     from .file import File
     from .tag import Tag
+    from .ticket import Ticket
 
 
 # TODO confirm the types and use them in react CategoryEvents
@@ -56,7 +57,6 @@ class Event(Base, Entity):
     # DONE add tags, another table or a list of strings ? yes table
     # DONE add artists, is it an accounts list with type artists ? no, it's a business
     # DONE add location: str ? latitude, longitude and city can be taken from location ?
-    # DONE Add price: float
     # DONE Add date: datetime or start_date and end_date ?
     # TODO Add interesados, participates ? is a number ?
     # DONE Add url or urls ? in Entity class ? yes and yes
@@ -69,20 +69,22 @@ class Event(Base, Entity):
 
     # relationships
 
-    # One-to-Many relationship with account
+    # One-to-Many relationships
     account: Mapped["Account"] = relationship("Account", back_populates="events")
 
-    # One-to-Many relationship with activity
     activities: Mapped[list["Activity"]] = relationship(
         "Activity", back_populates="event", cascade="all, delete-orphan"
     )
 
-    # Many-to-Many relationship with File
     files: Mapped[list["File"]] = relationship(
         "File", back_populates="event", cascade="all, delete-orphan"
     )
 
-    # Many-to-Many relationship with Tag
+    tickets: Mapped[list["Ticket"]] = relationship(
+        "Ticket", back_populates="event", cascade="all, delete-orphan"
+    )
+
+    # Many-to-Many relationships
     tags: Mapped[list["Tag"]] = relationship(
         "Tag",
         secondary="event_tag",
