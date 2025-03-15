@@ -1,11 +1,10 @@
-import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from ..config import Config
+from ..config import Config, logging
 from ..db import initialize
 from ..model import Account, AccountType, Event, EventFrequency
 from .routers.account import router as account_router

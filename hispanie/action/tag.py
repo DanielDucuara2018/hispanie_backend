@@ -1,6 +1,6 @@
-import logging
 from typing import overload
 
+from ..config import logging
 from ..model import Tag
 from ..schema import TagCreateRequest, TagUpdateRequest
 

@@ -7,6 +7,9 @@ from .utils import load_configuration, load_configuration_data
 
 ROOT = Path(__file__).parents[1]
 
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 
@@ -18,6 +21,7 @@ class Database:
     port: str
     user: str
     ref_table: str
+    force_recreate: bool = False
 
 
 @dataclass
@@ -71,7 +75,7 @@ class Config:
     account: Account
 
 
-def bootstrap_configuration(path: str = ROOT.joinpath("hispanie.ini")) -> None:
+def bootstrap_configuration(path: str | Path = ROOT.joinpath("hispanie.ini")) -> None:
     logger.info("Loading configuration from file %s", path)
     config = ConfigParser()
     config.read(path)
