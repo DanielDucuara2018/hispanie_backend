@@ -16,7 +16,7 @@ To create a new migration, just position yourself in the alembic folder.
 cd alembic
 ```
 
-For create migration run the revision command:
+To create migration run the revision command:
 
 ```
 alembic revision --autogenerate -m "The revision change message"

@@ -21,7 +21,7 @@ class Database:
     port: str
     user: str
     ref_table: str
-    force_recreate: bool = False
+    force_recreate: str = "0"
 
 
 @dataclass

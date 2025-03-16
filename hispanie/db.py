@@ -78,7 +78,7 @@ def create(conn: Connection, table_name: str, force: bool) -> bool:
     if not exists or force:
         from .model import Base
 
-        logger.info("Creating all tables %s", Base.metadata.tables.keys())
+        logger.info("Creating all tables %s", list(Base.metadata.tables))
         Base.metadata.create_all(bind=conn)
 
     return exists
@@ -115,7 +115,7 @@ def initialize(update_schema: bool = False) -> None:
     logger.info("Checking alembic migrations")
     engine = get_engine(Config.database, suffix="?target_session_attrs=read-write")
     with engine.connect() as conn:
-        exists = create(conn, Config.database.ref_table, Config.database.force_recreate)
+        exists = create(conn, Config.database.ref_table, bool(int(Config.database.force_recreate)))
         update(conn, exists=exists, dry_run=not update_schema)
 
         if get_missing_revisions(conn) and update_schema:
