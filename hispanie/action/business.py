@@ -1,6 +1,6 @@
-import logging
 from typing import overload
 
+from ..config import logging
 from ..model import Business, File, SocialNetwork
 from ..schema import BusinessCreateRequest, BusinessUpdateRequest
 from ..utils import ensure_user_owns_resource, handle_update_files, handle_update_resources

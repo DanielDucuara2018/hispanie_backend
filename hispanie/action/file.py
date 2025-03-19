@@ -1,9 +1,8 @@
-import logging
 from typing import overload
 
 import boto3
 
-from ..config import Config
+from ..config import Config, logging
 from ..model import File
 from ..schema import FileCreateRequest, FileUpdateRequest
 from ..utils import ensure_user_owns_resource

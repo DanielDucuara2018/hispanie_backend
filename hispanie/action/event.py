@@ -1,6 +1,6 @@
-import logging
 from typing import overload
 
+from ..config import logging
 from ..model import Activity, Event, File, Tag, Ticket
 from ..schema import EventCreateRequest, EventUpdateRequest
 from ..utils import (

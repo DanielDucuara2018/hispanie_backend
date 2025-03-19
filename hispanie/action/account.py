@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime, timedelta, timezone
 from typing import overload
 
@@ -8,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
 from pydantic import SecretStr
 
-from ..config import Config
+from ..config import Config, logging
 from ..model import Account, AccountType, File, ResetToken
 from ..schema import AccountCreateRequest, AccountUpdateRequest
 from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash, handle_update_files

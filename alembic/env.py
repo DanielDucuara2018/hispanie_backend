@@ -1,10 +1,10 @@
 from logging.config import fileConfig
 
-from report_calculation.db import load_database_info
-from report_calculation.model.base import mapper_registry
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from hispanie.config import Config
+from hispanie.model.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-target_metadata = mapper_registry.metadata
+target_metadata = Base.metadata
 
 
 def run_migrations_offline():
@@ -52,7 +52,7 @@ def run_migrations_online():
 
     """
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
@@ -64,8 +64,8 @@ def run_migrations_online():
             context.run_migrations()
 
 
-# load database information from .ini file
-db = load_database_info()
+# load database information
+db = Config.database
 engine_url = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}"
 config.set_main_option("sqlalchemy.url", engine_url)
 
