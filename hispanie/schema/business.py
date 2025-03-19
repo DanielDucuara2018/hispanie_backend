@@ -24,7 +24,7 @@ class BusinessCreateRequest(BaseModel):
     )
     is_public: bool = Field(default=False, description="Whether the business is public or not")
     category: BusinessCategory
-    description: str | None = Field(None, min_length=5, max_length=1000)
+    description: str | None = Field(None, max_length=2000)
     files: list["FileCreateRequest"] = Field(
         default_factory=list["FileCreateRequest"],
         description="List of files associated with the event",
@@ -59,7 +59,7 @@ class BusinessUpdateRequest(BaseModel):
     )
     is_public: bool | None = Field(None, description="Whether the business is public or not")
     category: BusinessCategory | None = None
-    description: str | None = Field(None, min_length=5, max_length=1000)
+    description: str | None = Field(None, max_length=2000)
     files: list["FileUpdateRequest"] | None = Field(
         default=None, description="List of files associated with the event"
     )
