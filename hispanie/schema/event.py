@@ -23,7 +23,7 @@ class EventCreateRequest(BaseModel):
     category: EventCategory
     frequency: EventFrequency
     is_public: bool = Field(default=False, description="Whether the event is public or not")
-    description: str | None = Field(None, max_length=1000)
+    description: str | None = Field(None, max_length=2000)
     start_date: datetime = Field(..., description="Start date of the event")
     end_date: datetime = Field(..., description="End date of the event")
     activities: list["ActivityCreateRequest"] = Field(
@@ -65,7 +65,7 @@ class EventUpdateRequest(BaseModel):
     category: EventCategory | None = None
     frequency: EventFrequency | None = None
     is_public: bool | None = Field(None, description="Whether the event is public or not")
-    description: str | None = Field(None, max_length=1000)
+    description: str | None = Field(None, max_length=2000)
     start_date: datetime | None = Field(None, description="Start date of the event")
     end_date: datetime | None = Field(None, description="End date of the event")
     activities: list["ActivityUpdateRequest"] | None = Field(
