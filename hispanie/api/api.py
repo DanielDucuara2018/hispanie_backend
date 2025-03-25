@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 API_PREFIX = "/api/v1"
 
 mapping_frequency_days = {
-    EventFrequency.DAILY: "days",
-    EventFrequency.WEEKLY: "weeks",
-    EventFrequency.MONTHLY: "months",
+    EventFrequency.DAILY: ("days", 1),
+    EventFrequency.WEEKLY: ("weeks", 1),
+    EventFrequency.MONTHLY: ("weeks", 4),
 }
 
 initialize(True)
@@ -91,7 +91,7 @@ async def update_periodic_events() -> None:
         if event.end_date > today:
             continue
 
-        timedelta_args = {mapping_frequency_days[event.frequency]: 1}
+        timedelta_args = dict([mapping_frequency_days[event.frequency]])
         event.update(
             start_date=event.start_date + timedelta(**timedelta_args),
             end_date=event.end_date + timedelta(**timedelta_args),
