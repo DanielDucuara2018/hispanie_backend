@@ -50,7 +50,7 @@ async def read_private(
 async def read_public():
     """Retrieve all public business."""
     try:
-        return read_businesses(is_public=True)
+        return read_businesses()
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving business: {str(e)}")
 

@@ -42,7 +42,7 @@ async def read_private(
 async def read_public():
     """Retrieve all events for the authenticated account."""
     try:
-        return read_events(is_public=True)
+        return read_events()
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving events: {str(e)}")
 
