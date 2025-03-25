@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any, Type, TypeVar, overload
 
-from sqlalchemy import ARRAY, Date, cast
+from sqlalchemy import ARRAY, Date, MetaData, cast
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
@@ -11,9 +11,18 @@ from hispanie.utils import to_list
 
 T = TypeVar("T", bound="Base")
 
+naming_convention = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
 
 class Base(DeclarativeBase):
     __errors__: dict[str, type[Error]] = {}
+    metadata = MetaData(naming_convention=naming_convention)
 
     id: Mapped[str] | None
 
