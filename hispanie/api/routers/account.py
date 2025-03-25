@@ -152,7 +152,7 @@ async def reset_password(
 @router.post("/public/create", response_model=AccountResponse)
 async def create(
     account_data: AccountCreateRequest,  # _: None = Depends(get_current_account)
-) -> AccountResponse:
+):
     """Create a new account with the provided data."""
     try:
         return create_account(account_data)
@@ -167,7 +167,7 @@ async def create(
 async def read(
     current_account: AccountResponse = Depends(get_current_account),
     show_all: Annotated[bool, Query(description="Set to true to list all users if admin")] = False,
-) -> AccountResponse | list[AccountResponse]:
+):
     """Get current user data or list all users if admin."""
     if show_all:
         ensure_admin_privileges(current_account)
@@ -182,7 +182,7 @@ async def read(
 async def update(
     account_data: AccountUpdateRequest,
     current_account: AccountResponse = Depends(get_current_account),
-) -> AccountResponse:
+):
     """Update the current account with the provided data."""
     try:
         return update_account(current_account.id, account_data)
@@ -195,7 +195,7 @@ async def update(
 @router.delete("/private/delete", response_model=AccountResponse)
 async def delete(
     current_account: AccountResponse = Depends(get_current_account),
-) -> AccountResponse:
+):
     """Delete the current account."""
     try:
         return delete_account(current_account.id)

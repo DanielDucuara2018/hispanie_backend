@@ -1,7 +1,6 @@
 from enum import Enum
 
-from sqlalchemy import Enum as SQLAEnum
-from sqlalchemy import LargeBinary, String
+from sqlalchemy import LargeBinary
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..utils import generate_password_hash, idun
@@ -52,17 +51,15 @@ class Account(Base, Resource):
 
     __tablename__ = "account"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: idun("account"))
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: idun("account"))
 
-    username: Mapped[str] = mapped_column(String, nullable=False)  # TODO is it unique ?
+    username: Mapped[str] = mapped_column(unique=True, nullable=False)
 
-    email: Mapped[str] = mapped_column(
-        String, unique=True, nullable=False
-    )  # TODO handle unique errors
+    email: Mapped[str] = mapped_column(unique=True, nullable=False)  # TODO handle unique errors
 
-    phone: Mapped[str] = mapped_column(String, nullable=True)
+    phone: Mapped[str] = mapped_column(nullable=True)
 
-    type: Mapped[AccountType] = mapped_column(SQLAEnum(AccountType), nullable=False)
+    type: Mapped[AccountType] = mapped_column(nullable=False)
 
     _password: Mapped[bytes] = mapped_column("password", LargeBinary, nullable=False)
 
