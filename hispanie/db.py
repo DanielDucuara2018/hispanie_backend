@@ -97,6 +97,7 @@ def update(conn: Connection, exists: bool, dry_run: bool = False) -> None:
         if current_head != script_head:
             logger.info("Upgrading database to: %s", script_head)
             upgrade(config, "head")
+            conn.commit()
         else:
             logger.info("The database is up-to-date: %s", script_head)
     elif script_head:
