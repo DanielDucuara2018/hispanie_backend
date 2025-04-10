@@ -1,8 +1,10 @@
 from logging.config import fileConfig
+from typing import Any
 
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from alembic.environment import EnvironmentContext
 from hispanie.config import Config
 from hispanie.model.base import Base
 
@@ -19,8 +21,19 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 target_metadata = Base.metadata
 
+# load database information
+db = Config.database
+engine_url = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}"
+config.set_main_option("sqlalchemy.url", engine_url)
 
-def run_migrations_offline():
+
+def run_migrations(context: EnvironmentContext | Any, **kwargs) -> None:
+    context.configure(target_metadata=target_metadata, **kwargs)
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -33,41 +46,34 @@ def run_migrations_offline():
 
     """
     url = config.get_main_option("sqlalchemy.url")
-    context.configure(
+    run_migrations(
+        context=context,
         url=url,
-        target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
 
-    with context.begin_transaction():
-        context.run_migrations()
 
-
-def run_migrations_online():
+def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connection = config.attributes.get("connection", None)
+    if connection is None:
+        connection = engine_from_config(
+            config.get_section(config.config_ini_section, {}),
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+        )
 
-    with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        with connection.connect() as conn:
+            run_migrations(context=context, connection=conn)
+    else:
+        run_migrations(context=context, connection=connection)
 
-        with context.begin_transaction():
-            context.run_migrations()
-
-
-# load database information
-db = Config.database
-engine_url = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}"
-config.set_main_option("sqlalchemy.url", engine_url)
 
 if context.is_offline_mode():
     run_migrations_offline()
