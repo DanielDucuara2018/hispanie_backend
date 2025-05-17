@@ -82,6 +82,7 @@ ssh -L 127.0.0.1:3201:hispanie:3201 username@ip_address
 
 ### 📁 Project Structure
 
+```bash
 ├── alembic/                 # Database migrations
 ├── hispanie/                # Application source code
 ├── pgsql/init.d/            # PostgreSQL initialization scripts
@@ -92,6 +93,7 @@ ssh -L 127.0.0.1:3201:hispanie:3201 username@ip_address
 ├── setup.py                 # Setup script for packaging
 ├── supervisord.conf         # Supervisor process config
 └── README.md                # Project documentation
+```
 
 ## 🤝 Contributing
 
