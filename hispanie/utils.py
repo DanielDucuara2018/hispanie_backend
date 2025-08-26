@@ -36,6 +36,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
+        # TODO consider to use APIKeyCookie and APIKeyHeader (maybe APIKeyQuery)
         authorization = request.cookies.get(self.token_key_name) or request.headers.get(
             "Authorization"
         )
