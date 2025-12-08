@@ -21,13 +21,13 @@ EMAIL_CONFIG = ConnectionConfig(
     MAIL_USERNAME=Config.email.username,
     MAIL_PASSWORD=SecretStr(Config.email.password),
     MAIL_FROM=Config.email.address,
-    MAIL_PORT=int(Config.email.port),
+    MAIL_PORT=Config.email.port,
     MAIL_SERVER=Config.email.server,
     MAIL_FROM_NAME=Config.email.name,
-    MAIL_STARTTLS=bool(int(Config.email.start_tls)),
-    MAIL_SSL_TLS=bool(int(Config.email.ssl_tls)),
-    USE_CREDENTIALS=bool(int(Config.email.credentials)),
-    VALIDATE_CERTS=bool(int(Config.email.validate_certs)),
+    MAIL_STARTTLS=Config.email.start_tls,
+    MAIL_SSL_TLS=Config.email.ssl_tls,
+    USE_CREDENTIALS=Config.email.credentials,
+    VALIDATE_CERTS=Config.email.validate_certs,
 )
 
 CREDENTIAL_EXCEPTION = HTTPException(

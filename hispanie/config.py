@@ -18,17 +18,17 @@ class Database:
     database: str
     host: str
     password: str
-    port: str
+    port: int
     user: str
     ref_table: str
-    force_recreate: str = "0"
+    force_recreate: bool = False
 
 
 @dataclass
 class JWT:
     secret_key: str
     algorithm: str
-    access_token_expire_minutes: str
+    access_token_expire_minutes: int
 
 
 @dataclass
@@ -39,13 +39,13 @@ class Email:
     username: str
     password: str
     address: str
-    port: str
+    port: int
     name: str
     server: str
-    start_tls: str
-    ssl_tls: str
-    credentials: str
-    validate_certs: str
+    start_tls: bool
+    ssl_tls: bool
+    credentials: bool
+    validate_certs: bool
 
 
 @dataclass
@@ -75,7 +75,7 @@ class Config:
     account: Account
 
 
-def bootstrap_configuration(path: str | Path = ROOT.joinpath("hispanie.ini")) -> None:
+def bootstrap_configuration(path: str | Path = ROOT.joinpath("config.ini")) -> None:
     logger.info("Loading configuration from file %s", path)
     config = ConfigParser()
     config.read(path)

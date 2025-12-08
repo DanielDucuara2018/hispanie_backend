@@ -1,7 +1,8 @@
+import os
 import secrets
 from collections import defaultdict
 from dataclasses import fields
-from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, cast
 
 import bcrypt
 from apischema import deserialize
@@ -17,7 +18,9 @@ _config_fields: dict[Type, Optional[Any]] = {}
 
 Cls = TypeVar("Cls", bound=Type)
 
+T_coerce = TypeVar("T_coerce")
 TOKEN_KEY_NAME = "access_token"
+BOOL_VALUES = {"1", "true", "yes", "on", "True", "Yes", "On"}
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2):
@@ -75,9 +78,32 @@ def load_configuration(cls: Cls) -> Cls:
     return cls
 
 
+def coerce(cls: type[T_coerce], data) -> T_coerce:
+    """Coerce configuration values from strings to appropriate types."""
+    if isinstance(data, dict):
+        return data
+
+    # Check if data is an environment variable placeholder
+    if isinstance(data, str) and "env" in data.lower():
+        if data in os.environ:
+            data = os.environ[data]
+        else:
+            raise RuntimeError(f"Environment variable {data} not set")
+
+    # Type conversion
+    if cls in {int, str, float}:
+        data = cast(T_coerce, cls(data))
+    elif cls is list:
+        data = cast(T_coerce, cls(data.split(",")))
+    elif cls is bool:
+        data = cast(T_coerce, cls(data in BOOL_VALUES))
+
+    return data
+
+
 def load_configuration_data(config: dict[str, Any]) -> None:
     for key, _ in _config_fields.items():
-        _config_fields[key] = deserialize(key, config)
+        _config_fields[key] = deserialize(key, config, coerce=coerce)
 
 
 def idun(prefix: str, nbytes: int = 16) -> str:
