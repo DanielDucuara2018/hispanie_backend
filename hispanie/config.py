@@ -22,6 +22,7 @@ class Database:
     user: str
     ref_table: str
     force_recreate: bool = False
+    alembic_migration: bool = True
 
 
 @dataclass

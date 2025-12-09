@@ -25,11 +25,11 @@ FROM base AS dependencies
 
 # Upgrade pip
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --no-cache-dir --upgrade pip
+    pip install --upgrade pip
 
 # Install base Python dependencies
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --no-cache-dir --editable .
+    pip install --editable .
 
 # ============================================================================
 # DEV STAGE - Development environment with hot reload

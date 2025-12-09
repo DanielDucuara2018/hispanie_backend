@@ -30,7 +30,7 @@ mapping_frequency_days = {
     EventFrequency.MONTHLY: ("weeks", 4),
 }
 
-initialize(True)
+initialize(Config.database.alembic_migration)
 
 app = FastAPI()
 
