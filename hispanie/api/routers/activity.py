@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ...action import (
+from hispanie.action import (
     create_activity,
     delete_activity,
     get_current_account,
     read_activities,
     update_activity,
 )
-from ...schema import ActivityCreateRequest, ActivityResponse, ActivityUpdateRequest
+from hispanie.schema import ActivityCreateRequest, ActivityResponse, ActivityUpdateRequest
 
 router = APIRouter(
     prefix="/activity",

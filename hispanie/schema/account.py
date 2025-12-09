@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from ..model import AccountType
-from ..typing import CustomDateTime
+from hispanie.model import AccountType
+from hispanie.typing import CustomDateTime
 
 
 class Token(BaseModel):
@@ -69,6 +69,10 @@ class AccountResponse(BaseModel):
     events: list["EventResponse"]
 
 
-from .business import BusinessResponse  # noqa: E402
-from .event import EventResponse  # noqa: E402
-from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402
+from hispanie.schema.business import BusinessResponse  # noqa: E402
+from hispanie.schema.event import EventResponse  # noqa: E402
+from hispanie.schema.file import (  # noqa: E402
+    FileBasicResponse,
+    FileCreateRequest,
+    FileUpdateRequest,
+)

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from ..model import BusinessCategory
-from ..typing import CustomDateTime
+from hispanie.model import BusinessCategory
+from hispanie.typing import CustomDateTime
 
 
 class BusinessCreateRequest(BaseModel):
@@ -98,10 +98,14 @@ class BusinessResponse(BaseModel):
     update_date: CustomDateTime | None
 
 
-from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402
-from .social_network import (  # noqa: E402
+from hispanie.schema.file import (  # noqa: E402
+    FileBasicResponse,
+    FileCreateRequest,
+    FileUpdateRequest,
+)
+from hispanie.schema.social_network import (  # noqa: E402
     SocialNetworkBasicResponse,
     SocialNetworkCreateRequest,
     SocialNetworkUpdateRequest,
 )
-from .tag import TagBasicResponse  # noqa: E402
+from hispanie.schema.tag import TagBasicResponse  # noqa: E402

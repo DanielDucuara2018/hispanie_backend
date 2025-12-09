@@ -10,6 +10,7 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
+      target: dev
     networks:
       hispanie_bridge:
         ipv4_address: 169.254.10.2
@@ -20,6 +21,8 @@ services:
     volumes:
       - ./:/app/
       - /app/hispanie.egg-info/
+    env_file:
+      - .env
     depends_on:
       postgres:
         condition: service_healthy

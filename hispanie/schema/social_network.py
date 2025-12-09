@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..model.social_network import SocialNetworkCategory
-from ..typing import CustomDateTime
+from hispanie.model.social_network import SocialNetworkCategory
+from hispanie.typing import CustomDateTime
 
 
 class SocialNetworkCreateRequest(BaseModel):

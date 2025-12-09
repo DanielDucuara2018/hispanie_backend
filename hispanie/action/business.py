@@ -1,11 +1,11 @@
 from typing import overload
 
-from ..config import logging
-from ..model import Business, File, SocialNetwork
-from ..schema import BusinessCreateRequest, BusinessUpdateRequest
-from ..utils import ensure_user_owns_resource, handle_update_files, handle_update_resources
-from .account import read as read_accounts
-from .tag import read as read_tags
+from hispanie.action.account import read as read_accounts
+from hispanie.action.tag import read as read_tags
+from hispanie.config import logging
+from hispanie.model import Business, File, SocialNetwork
+from hispanie.schema import BusinessCreateRequest, BusinessUpdateRequest
+from hispanie.utils import ensure_user_owns_resource, handle_update_files, handle_update_resources
 
 logger = logging.getLogger(__name__)
 

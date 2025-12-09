@@ -1,8 +1,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import Base
-from .resource import Resource
+from hispanie.model.base import Base
+from hispanie.model.resource import Resource
 
 
 # Association Class for Many-to-Many relationship

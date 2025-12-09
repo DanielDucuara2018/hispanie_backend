@@ -4,16 +4,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from ..config import Config, logging
-from ..db import initialize
-from ..model import Account, AccountType, Event, EventFrequency
-from .routers.account import router as account_router
-from .routers.activity import router as activity_router
-from .routers.business import router as business_router
-from .routers.event import router as event_router
-from .routers.file import router as file_router
-from .routers.tag import router as tag_router
-from .routers.ticket import router as ticket_router
+from hispanie.api.routers.account import router as account_router
+from hispanie.api.routers.activity import router as activity_router
+from hispanie.api.routers.business import router as business_router
+from hispanie.api.routers.event import router as event_router
+from hispanie.api.routers.file import router as file_router
+from hispanie.api.routers.tag import router as tag_router
+from hispanie.api.routers.ticket import router as ticket_router
+from hispanie.config import Config, logging
+from hispanie.db import initialize
+from hispanie.model import Account, AccountType, Event, EventFrequency
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO

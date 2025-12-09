@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from hispanie.schema import AccountResponse
-
-from ...action import (
+from hispanie.action import (
     create_file,
     delete_file,
     generate_download_presigned_url,
@@ -11,7 +9,8 @@ from ...action import (
     read_files,
     update_file,
 )
-from ...schema import (
+from hispanie.schema import (
+    AccountResponse,
     FileCreateRequest,
     FileGeneratePresignedUrlResponse,
     FileResponse,

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..typing import CustomDateTime
+from hispanie.typing import CustomDateTime
 
 
 class TagCreateRequest(BaseModel):
@@ -49,5 +49,5 @@ class TagBasicResponse(BaseModel):
     update_date: CustomDateTime | None
 
 
-from .business import BusinessResponse  # noqa: E402
-from .event import EventResponse  # noqa: E402
+from hispanie.schema.business import BusinessResponse  # noqa: E402
+from hispanie.schema.event import EventResponse  # noqa: E402

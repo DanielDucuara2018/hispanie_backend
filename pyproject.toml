@@ -1,3 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hispanie"
+version = "0.1.0"
+description = "Backend for hispanie app"
+authors = [{ name = "Daniel Ducuara", email = "daniel14015@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.12.0"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "alembic>=1.14.0",
+    "apischema>=0.19.0",
+    "asyncio>=3.4.3",
+    "bcrypt>=4.2.1",
+    "boto3>=1.36.13",
+    "fastapi[all]>=0.115.5",
+    "fastapi_mail>=1.4.2",
+    "fastapi-utils[all]>=0.8.0",
+    "itsdangerous>=2.2.0",
+    "psycopg2-binary>=2.9.10",
+    "python-jose[cryptography]==3.3.0",
+    "SQLAlchemy>=2.0.36",
+]
+
+[project.optional-dependencies]
+dev = ["pre-commit>=4.0.1", "black>=24.10.0", "ruff>=0.8.0"]
+test = [
+    "pytest>=8.3.3",
+    "pytest-mock>=3.14.0",
+    "pytest-cov>=6.0.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=hispanie --cov-report=term-missing"
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"

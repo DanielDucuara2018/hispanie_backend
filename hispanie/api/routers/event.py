@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from hispanie.schema import AccountResponse
-
-from ...action import create_event, delete_event, get_current_account, read_events, update_event
-from ...schema import EventCreateRequest, EventResponse, EventUpdateRequest
+from hispanie.action import (
+    create_event,
+    delete_event,
+    get_current_account,
+    read_events,
+    update_event,
+)
+from hispanie.schema import AccountResponse, EventCreateRequest, EventResponse, EventUpdateRequest
 
 router = APIRouter(
     prefix="/events",

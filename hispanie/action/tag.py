@@ -1,8 +1,8 @@
 from typing import overload
 
-from ..config import logging
-from ..model import Tag
-from ..schema import TagCreateRequest, TagUpdateRequest
+from hispanie.config import logging
+from hispanie.model import Tag
+from hispanie.schema import TagCreateRequest, TagUpdateRequest
 
 logger = logging.getLogger(__name__)
 

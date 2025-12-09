@@ -3,13 +3,13 @@ from enum import Enum
 from sqlalchemy import LargeBinary
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..utils import generate_password_hash, idun
-from .base import Base
-from .business import Business
-from .event import Event
-from .file import File
-from .reset_token import ResetToken
-from .resource import Resource
+from hispanie.model.base import Base
+from hispanie.model.business import Business
+from hispanie.model.event import Event
+from hispanie.model.file import File
+from hispanie.model.reset_token import ResetToken
+from hispanie.model.resource import Resource
+from hispanie.utils import generate_password_hash, idun
 
 
 class AccountType(Enum):

@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ...action import (
+from hispanie.action import (
     create_ticket,
     delete_ticket,
     get_current_account,
     read_tickets,
     update_ticket,
 )
-from ...schema import TicketCreateRequest, TicketResponse, TicketUpdateRequest
+from hispanie.schema import TicketCreateRequest, TicketResponse, TicketUpdateRequest
 
 router = APIRouter(
     prefix="/ticket",

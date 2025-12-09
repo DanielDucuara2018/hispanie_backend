@@ -1,8 +1,8 @@
 from typing import overload
 
-from ..config import logging
-from ..model import Event, Ticket
-from ..schema import TicketCreateRequest, TicketUpdateRequest
+from hispanie.config import logging
+from hispanie.model import Event, Ticket
+from hispanie.schema import TicketCreateRequest, TicketUpdateRequest
 
 logger = logging.getLogger(__name__)
 

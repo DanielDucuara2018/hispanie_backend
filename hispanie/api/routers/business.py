@@ -2,16 +2,19 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from hispanie.schema import AccountResponse
-
-from ...action import (
+from hispanie.action import (
     create_business,
     delete_business,
     get_current_account,
     read_businesses,
     update_business,
 )
-from ...schema import BusinessCreateRequest, BusinessResponse, BusinessUpdateRequest
+from hispanie.schema import (
+    AccountResponse,
+    BusinessCreateRequest,
+    BusinessResponse,
+    BusinessUpdateRequest,
+)
 
 router = APIRouter(
     prefix="/businesses",

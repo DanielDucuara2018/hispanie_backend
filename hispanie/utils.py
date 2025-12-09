@@ -84,7 +84,7 @@ def coerce(cls: type[T_coerce], data) -> T_coerce:
         return data
 
     # Check if data is an environment variable placeholder
-    if isinstance(data, str) and "env" in data.lower():
+    if isinstance(data, str) and data.endswith("_ENV"):
         if data in os.environ:
             data = os.environ[data]
         else:
@@ -97,6 +97,8 @@ def coerce(cls: type[T_coerce], data) -> T_coerce:
         data = cast(T_coerce, cls(data.split(",")))
     elif cls is bool:
         data = cast(T_coerce, cls(data in BOOL_VALUES))
+    else:
+        raise TypeError(f"Unsupported type for coercion: {cls}")
 
     return data
 

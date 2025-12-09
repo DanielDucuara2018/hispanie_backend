@@ -1,8 +1,8 @@
 from typing import overload
 
-from ..config import logging
-from ..model import Activity, Event
-from ..schema import ActivityCreateRequest, ActivityUpdateRequest
+from hispanie.config import logging
+from hispanie.model import Activity, Event
+from hispanie.schema import ActivityCreateRequest, ActivityUpdateRequest
 
 logger = logging.getLogger(__name__)
 

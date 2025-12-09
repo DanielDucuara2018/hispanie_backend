@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -12,11 +13,10 @@ from alembic.command import upgrade
 from alembic.config import Config as AlembicConfig
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
+from hispanie.config import Config, Database
+from hispanie.errors import DBError
 
-from .config import Config, Database, logging
-from .errors import DBError
-
-ROOT = Path(__file__).parents[1]
+ROOT = Path(__file__).parents[1].resolve()
 ALEMBIC_PATH = ROOT.joinpath("alembic")
 
 logger = logging.getLogger(__name__)
@@ -90,8 +90,10 @@ def update(conn: Connection, exists: bool, dry_run: bool = False) -> None:
     config, script, context, script_head, current_head = get_alembic_config(conn)
     missing_revisions = [s for s in script.iterate_revisions(script_head, current_head)]
 
-    if dry_run and missing_revisions:
-        logger.error("Database not updated. Please update with update_schema = True.")
+    if dry_run:
+        if missing_revisions:
+            logger.error("Database not updated. Please update with update_schema = True.")
+        return
 
     if exists:
         if current_head != script_head:

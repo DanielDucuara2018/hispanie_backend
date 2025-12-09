@@ -2,11 +2,11 @@ from typing import overload
 
 import boto3
 
-from ..config import Config, logging
-from ..model import File
-from ..schema import FileCreateRequest, FileUpdateRequest
-from ..utils import ensure_user_owns_resource
-from .account import read as read_accounts
+from hispanie.action.account import read as read_accounts
+from hispanie.config import Config, logging
+from hispanie.model import File
+from hispanie.schema import FileCreateRequest, FileUpdateRequest
+from hispanie.utils import ensure_user_owns_resource
 
 logger = logging.getLogger(__name__)
 

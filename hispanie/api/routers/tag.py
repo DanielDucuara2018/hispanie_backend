@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ...action import create_tag, delete_tag, get_current_account, read_tags, update_tag
-from ...schema import TagCreateRequest, TagResponse, TagUpdateRequest
+from hispanie.action import create_tag, delete_tag, get_current_account, read_tags, update_tag
+from hispanie.schema import TagCreateRequest, TagResponse, TagUpdateRequest
 
 router = APIRouter(
     prefix="/tags",

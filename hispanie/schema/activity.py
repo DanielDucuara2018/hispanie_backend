@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..typing import CustomDateTime
+from hispanie.typing import CustomDateTime
 
 
 class ActivityCreateRequest(BaseModel):

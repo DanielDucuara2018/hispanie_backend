@@ -13,17 +13,7 @@ from fastapi import (
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import (
-    AccountCreateRequest,
-    AccountResponse,
-    AccountUpdateRequest,
-    ForgotPasswordRequest,
-    ResetPasswordRequest,
-    Token,
-    ValidateTokenRequest,
-)
-
-from ...action import (
+from hispanie.action import (
     authenticate_account,
     create_access_token,
     create_account,
@@ -36,9 +26,18 @@ from ...action import (
     read_accounts,
     update_account,
 )
-from ...config import Config
-from ...model.account import Account, AccountType
-from ...utils import TOKEN_KEY_NAME
+from hispanie.config import Config
+from hispanie.model.account import Account, AccountType
+from hispanie.schema import (
+    AccountCreateRequest,
+    AccountResponse,
+    AccountUpdateRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    Token,
+    ValidateTokenRequest,
+)
+from hispanie.utils import TOKEN_KEY_NAME
 
 router = APIRouter(
     prefix="/accounts",

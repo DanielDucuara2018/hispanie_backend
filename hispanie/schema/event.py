@@ -2,8 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from ..model import EventCategory, EventFrequency
-from ..typing import CustomDateTime
+from hispanie.model import EventCategory, EventFrequency
+from hispanie.typing import CustomDateTime
 
 
 class EventCreateRequest(BaseModel):
@@ -117,11 +117,19 @@ class EventResponse(BaseModel):
     update_date: CustomDateTime | None
 
 
-from .activity import (  # noqa: E402
+from hispanie.schema.activity import (  # noqa: E402
     ActivityCreateRequest,
     ActivityResponse,
     ActivityUpdateRequest,
 )
-from .file import FileBasicResponse, FileCreateRequest, FileUpdateRequest  # noqa: E402
-from .tag import TagBasicResponse  # noqa: E402
-from .ticket import TicketCreateRequest, TicketResponse, TicketUpdateRequest  # noqa: E402
+from hispanie.schema.file import (  # noqa: E402
+    FileBasicResponse,
+    FileCreateRequest,
+    FileUpdateRequest,
+)
+from hispanie.schema.tag import TagBasicResponse  # noqa: E402
+from hispanie.schema.ticket import (  # noqa: E402
+    TicketCreateRequest,
+    TicketResponse,
+    TicketUpdateRequest,
+)

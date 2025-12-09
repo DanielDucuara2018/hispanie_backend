@@ -7,10 +7,10 @@ from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
 from pydantic import SecretStr
 
-from ..config import Config, logging
-from ..model import Account, AccountType, File, ResetToken
-from ..schema import AccountCreateRequest, AccountUpdateRequest
-from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash, handle_update_files
+from hispanie.config import Config, logging
+from hispanie.model import Account, AccountType, File, ResetToken
+from hispanie.schema import AccountCreateRequest, AccountUpdateRequest
+from hispanie.utils import OAuth2PasswordBearerWithCookie, check_password_hash, handle_update_files
 
 logger = logging.getLogger(__name__)
 

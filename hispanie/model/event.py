@@ -6,10 +6,10 @@ from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..errors import NoEventFound
-from ..utils import idun
-from .base import Base
-from .entity import Entity
+from hispanie.errors import NoEventFound
+from hispanie.model.base import Base
+from hispanie.model.entity import Entity
+from hispanie.utils import idun
 
 if TYPE_CHECKING:
     from .account import Account

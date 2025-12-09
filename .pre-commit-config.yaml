@@ -13,10 +13,11 @@ repos:
         args: [-b, main, -b, develop, -b, master]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
-  # - repo: https://github.com/gitleaks/gitleaks
-  #   rev: v8.23.1
-  #   hooks:
-  #     - id: gitleaks
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.23.1
+    hooks:
+      - id: gitleaks
+        args: ["--verbose", "--redact"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.1
     hooks:
