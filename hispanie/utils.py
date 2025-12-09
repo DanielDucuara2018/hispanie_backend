@@ -97,8 +97,6 @@ def coerce(cls: type[T_coerce], data) -> T_coerce:
         data = cast(T_coerce, cls(data.split(",")))
     elif cls is bool:
         data = cast(T_coerce, cls(data in BOOL_VALUES))
-    else:
-        raise TypeError(f"Unsupported type for coercion: {cls}")
 
     return data
 
