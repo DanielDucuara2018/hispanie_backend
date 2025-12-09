@@ -5,10 +5,17 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Run populate-env-variables.sh to ensure .env exists
 "$SCRIPT_DIR/populate-env-variables.sh"
+POPULATE_EXIT_CODE=$?
 
-# If populate script exited (waiting for user to edit .env), stop here
-if [ $? -eq 0 ] && [ ! -s "$SCRIPT_DIR/../.env" ]; then
+# If populate script exited with code 2 (waiting for user to edit .env), stop here
+if [ $POPULATE_EXIT_CODE -eq 2 ]; then
     exit 0
+fi
+
+# If populate script failed, exit with error
+if [ $POPULATE_EXIT_CODE -ne 0 ]; then
+    echo "❌ Failed to populate environment variables"
+    exit 1
 fi
 
 # Enable Docker BuildKit for faster builds
