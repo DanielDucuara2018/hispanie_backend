@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ...action import create_tag, delete_tag, get_current_account, read_tags, update_tag
-from ...schema import TagCreateRequest, TagResponse, TagUpdateRequest
+from hispanie.action import create_tag, delete_tag, get_current_account, read_tags, update_tag
+from hispanie.schema import TagCreateRequest, TagResponse, TagUpdateRequest
 
 router = APIRouter(
     prefix="/tags",
@@ -18,7 +18,7 @@ async def create(
 ):
     """Create a new tag for the authenticated account."""
     try:
-        return create_tag(tag_data)
+        return await create_tag(tag_data)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error creating tag: {str(e)}")
 
@@ -30,7 +30,7 @@ async def read(
 ):
     """Retrieve all tag for the authenticated account."""
     try:
-        return read_tags()
+        return await read_tags()
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving tags: {str(e)}")
 
@@ -44,7 +44,7 @@ async def update(
 ):
     """Update a tag by its ID."""
     try:
-        return update_tag(tag_id, tag_update)
+        return await update_tag(tag_id, tag_update)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error updating tag: {str(e)}")
 
@@ -57,6 +57,6 @@ async def delete(
 ):
     """Delete a tag by its ID."""
     try:
-        return delete_tag(tag_id)
+        return await delete_tag(tag_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error deleting tag: {str(e)}")

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..model import Currency
-from ..typing import CustomDateTime
+from hispanie.model import Currency
+from hispanie.typing import CustomDateTime
 
 
 class TicketCreateRequest(BaseModel):

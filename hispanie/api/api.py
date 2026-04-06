@@ -1,19 +1,20 @@
+import asyncio
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_utils.tasks import repeat_every
 
-from ..config import Config, logging
-from ..db import initialize
-from ..model import Account, AccountType, Event, EventFrequency
-from .routers.account import router as account_router
-from .routers.activity import router as activity_router
-from .routers.business import router as business_router
-from .routers.event import router as event_router
-from .routers.file import router as file_router
-from .routers.tag import router as tag_router
-from .routers.ticket import router as ticket_router
+from hispanie.api.routers.account import router as account_router
+from hispanie.api.routers.activity import router as activity_router
+from hispanie.api.routers.business import router as business_router
+from hispanie.api.routers.event import router as event_router
+from hispanie.api.routers.file import router as file_router
+from hispanie.api.routers.tag import router as tag_router
+from hispanie.api.routers.ticket import router as ticket_router
+from hispanie.config import Config, logging
+from hispanie.db import init, initialize
+from hispanie.model import Account, AccountType, Event, EventFrequency
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -30,9 +31,59 @@ mapping_frequency_days = {
     EventFrequency.MONTHLY: ("weeks", 4),
 }
 
-initialize(True)
+initialize(Config.database.alembic_migration)
 
-app = FastAPI()
+PERIODIC_INTERVAL = 60 * 60 * 24  # 1 day
+
+
+async def update_periodic_events() -> None:
+    while True:
+        logger.info("Updating periodic events")
+        today = datetime.today().replace(tzinfo=timezone.utc)
+        for event in await Event.find(**{"!frequency": EventFrequency.NONE}):
+            if event.end_date > today:
+                continue
+
+            timedelta_args = dict([mapping_frequency_days[event.frequency]])
+            await event.update(
+                start_date=event.start_date + timedelta(**timedelta_args),
+                end_date=event.end_date + timedelta(**timedelta_args),
+            )
+
+            for activity in event.activities:
+                await activity.update(
+                    start_date=activity.start_date + timedelta(**timedelta_args),
+                    end_date=activity.end_date + timedelta(**timedelta_args),
+                )
+
+        await asyncio.sleep(PERIODIC_INTERVAL)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init()
+
+    logger.info("Creating hispanie admin account")
+    account = await Account.find(username=Config.account.username)
+    if account:
+        logger.info("Account %s already exists %s", Config.account.username, account[0].id)
+    else:
+        account = await Account(
+            username=Config.account.username,
+            password=Config.account.password,
+            email=Config.account.email,
+            phone=Config.account.phone,
+            description=Config.account.description,
+            type=AccountType.ADMIN,
+        ).create()
+        logger.info("Account %s was just created with id %s", Config.account.username, account.id)
+
+    task = asyncio.create_task(update_periodic_events())
+    yield
+    task.cancel()
+
+
+app = FastAPI(lifespan=lifespan)
 
 # TODO Limit these to specific origins, methods, and headers to reduce the attack surface.
 # TODO If you set allow_credentials=True, you must carefully pair it with restrictive allow_origins settings to avoid exposing sensitive data to untrusted origins.
@@ -62,50 +113,11 @@ app.include_router(tag_router, prefix=API_PREFIX)
 app.include_router(ticket_router, prefix=API_PREFIX)
 
 
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Creating hispanie admin account")
-
-    account = Account.find(username=Config.account.username)
-    if account:
-        logger.info("Account %s already exists %s", Config.account.username, account[0].id)
-        return
-
-    account = Account(
-        username=Config.account.username,
-        password=Config.account.password,
-        email=Config.account.email,
-        phone=Config.account.phone,
-        description=Config.account.description,
-        type=AccountType.ADMIN,
-    ).create()
-    logger.info("Account %s was just created with id %s", Config.account.username, account.id)
-
-
-@app.on_event("startup")
-@repeat_every(seconds=60 * 60 * 24)  # 1 day
-async def update_periodic_events() -> None:
-    logger.info("Updating periodic events")
-    today = datetime.today().replace(tzinfo=timezone.utc)
-    for event in Event.find(**{"!frequency": EventFrequency.NONE}):
-        if event.end_date > today:
-            continue
-
-        timedelta_args = dict([mapping_frequency_days[event.frequency]])
-        event.update(
-            start_date=event.start_date + timedelta(**timedelta_args),
-            end_date=event.end_date + timedelta(**timedelta_args),
-        )
-
-        [
-            activity.update(
-                start_date=activity.start_date + timedelta(**timedelta_args),
-                end_date=activity.end_date + timedelta(**timedelta_args),
-            )
-            for activity in event.activities
-        ]
-
-
 @app.get(API_PREFIX)
 async def root():
     return {"message": "Welcome to hispanie app"}
+
+
+@app.get("/")
+async def healthcheck():
+    return {"message": "hispanie app is alive"}

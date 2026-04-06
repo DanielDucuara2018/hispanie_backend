@@ -1,4 +1,4 @@
-from .account import (
+from hispanie.schema.account import (
     AccountCreateRequest,
     AccountResponse,
     AccountUpdateRequest,
@@ -7,21 +7,21 @@ from .account import (
     Token,
     ValidateTokenRequest,
 )
-from .activity import (
+from hispanie.schema.activity import (
     ActivityCreateRequest,
     ActivityResponse,
     ActivityUpdateRequest,
 )
-from .business import BusinessCreateRequest, BusinessResponse, BusinessUpdateRequest
-from .event import EventCreateRequest, EventResponse, EventUpdateRequest
-from .file import (
+from hispanie.schema.business import BusinessCreateRequest, BusinessResponse, BusinessUpdateRequest
+from hispanie.schema.event import EventCreateRequest, EventResponse, EventUpdateRequest
+from hispanie.schema.file import (
     FileCreateRequest,
     FileGeneratePresignedUrlResponse,
     FileResponse,
     FileUpdateRequest,
 )
-from .tag import TagBasicResponse, TagCreateRequest, TagResponse, TagUpdateRequest
-from .ticket import TicketCreateRequest, TicketResponse, TicketUpdateRequest
+from hispanie.schema.tag import TagBasicResponse, TagCreateRequest, TagResponse, TagUpdateRequest
+from hispanie.schema.ticket import TicketCreateRequest, TicketResponse, TicketUpdateRequest
 
 __all__ = [
     "AccountCreateRequest",

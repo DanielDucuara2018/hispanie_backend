@@ -7,10 +7,10 @@ from itsdangerous import URLSafeTimedSerializer
 from jose import JWTError, jwt
 from pydantic import SecretStr
 
-from ..config import Config, logging
-from ..model import Account, AccountType, File, ResetToken
-from ..schema import AccountCreateRequest, AccountUpdateRequest
-from ..utils import OAuth2PasswordBearerWithCookie, check_password_hash, handle_update_files
+from hispanie.config import Config, logging
+from hispanie.model import Account, AccountType, File, ResetToken
+from hispanie.schema import AccountCreateRequest, AccountUpdateRequest
+from hispanie.utils import OAuth2PasswordBearerWithCookie, check_password_hash, handle_update_files
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +43,9 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/api/v1/accounts/public
 # create account
 
 
-def create(account_data: AccountCreateRequest) -> Account:
+async def create(account_data: AccountCreateRequest) -> Account:
     logger.info("Adding new account")
-    account = Account(
+    account = await Account(
         username=account_data.username,
         email=account_data.email,
         type=AccountType(account_data.type),
@@ -56,18 +56,18 @@ def create(account_data: AccountCreateRequest) -> Account:
 
 
 @overload
-def read(account_id: str) -> Account: ...
+async def read(account_id: str) -> Account: ...
 @overload
-def read(**kwargs) -> list[Account]: ...
-def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
+async def read(**kwargs) -> list[Account]: ...
+async def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
     if account_id:
         logger.info("Reading account: %s", account_id)
-        account = Account.get(id=account_id)
+        account = await Account.get(id=account_id)
         logger.info("Data found for account %s", account.id)
         return account
     else:
         logger.info("Reading all accounts with filters %s", kwargs)
-        accounts = Account.find(**kwargs)
+        accounts = await Account.find(**kwargs)
         logger.info("Data found for account %s", [ac.id for ac in accounts])
         return accounts
 
@@ -75,15 +75,15 @@ def read(account_id: str | None = None, **kwargs) -> Account | list[Account]:
 # update account
 
 
-def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
+async def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
     logger.info("Updating %s with data %s", account_id, account_data)
-    account = Account.get(id=account_id)
+    account = await Account.get(id=account_id)
     data = account_data.model_dump(exclude_none=True)
     if files := data.pop("files", []):
-        data["files"] = handle_update_files(files, File)
+        data["files"] = await handle_update_files(files, File)
     if old_password := data.pop("old_password", ""):
-        authenticate_account(account.username, old_password)
-    result = account.update(**data)
+        await authenticate_account(account.username, old_password)
+    result = await account.update(**data)
     logger.info("Updated account %s", account_id)
     return result
 
@@ -91,9 +91,10 @@ def update(account_id: str, account_data: AccountUpdateRequest) -> Account:
 # delete account
 
 
-def delete(account_id: str) -> Account:
+async def delete(account_id: str) -> Account:
     logger.info("Deleting %s account", account_id)
-    result = Account.get(id=account_id).delete()
+    account = await Account.get(id=account_id)
+    result = await account.delete()
     logger.info("Deleted account %s", account_id)
     return result
 
@@ -101,8 +102,8 @@ def delete(account_id: str) -> Account:
 # authenticate account
 
 
-def authenticate_account(username: str, password: str) -> Account | None:
-    accounts = read(username=username)
+async def authenticate_account(username: str, password: str) -> Account | None:
+    accounts = await read(username=username)
     if accounts and check_password_hash(accounts[0].password, password):
         return accounts[0]
     return None
@@ -137,7 +138,7 @@ async def check_account_session(token: str = Depends(oauth2_scheme)) -> str:
 
 
 async def get_current_account(token: str = Depends(oauth2_scheme)) -> Account:
-    accounts = read(username=await check_account_session(token))
+    accounts = await read(username=await check_account_session(token))
     if not accounts:
         raise CREDENTIAL_EXCEPTION
     return accounts[0]
@@ -146,9 +147,9 @@ async def get_current_account(token: str = Depends(oauth2_scheme)) -> Account:
 # handle password forgotten
 
 
-def handle_forgotten_password(email: str, background_tasks: BackgroundTasks) -> None:
+async def handle_forgotten_password(email: str, background_tasks: BackgroundTasks) -> None:
     logger.info("Processing forgotten password request")
-    accounts = read(email=email)
+    accounts = await read(email=email)
     if not accounts:
         raise HTTPException(status_code=404, detail="account not found")
 
@@ -158,10 +159,10 @@ def handle_forgotten_password(email: str, background_tasks: BackgroundTasks) -> 
     logger.info("Preparing email for account %s to email %s", account.id, account.email)
 
 
-def handle_reset_password(token: str, new_password: str) -> None:
+async def handle_reset_password(token: str, new_password: str) -> None:
     logger.info("Reseting password")
 
-    is_used = is_reset_token_used(token)
+    is_used = await is_reset_token_used(token)
     if is_used:
         raise HTTPException(status_code=400, detail="This token was already used")
 
@@ -169,13 +170,13 @@ def handle_reset_password(token: str, new_password: str) -> None:
     if not email:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
 
-    accounts = read(email=email)
+    accounts = await read(email=email)
     if not accounts:
         raise HTTPException(status_code=404, detail="account not found")
 
-    result = accounts[0].update(password=new_password)
+    result = await accounts[0].update(password=new_password)
     logger.info("Reseted password for account %s", result.id)
-    set_reset_token_as_used(token)
+    await set_reset_token_as_used(token)
 
 
 async def send_reset_email(account: Account, token: str) -> None:
@@ -190,26 +191,28 @@ async def send_reset_email(account: Account, token: str) -> None:
     fm = FastMail(EMAIL_CONFIG)
     await fm.send_message(message)
     logger.info("Email sent to %s", account.email)
-    save_reset_token(account, token)
+    await save_reset_token(account, token)
 
 
-def save_reset_token(account: Account, token: str) -> None:
-    [reset_token.update(used=True) for reset_token in account.reset_tokens]
+async def save_reset_token(account: Account, token: str) -> None:
+    for reset_token in account.reset_tokens:
+        await reset_token.update(used=True)
     logger.info("Saving reset token in DB")
-    ResetToken(id=token, account=account).create()
+    await ResetToken(id=token, account=account).create()
     logger.info("Saved reset token in DB")
 
 
-def is_reset_token_used(token: str) -> bool:
+async def is_reset_token_used(token: str) -> bool:
     logger.info("Validating if reset token was used")
-    reset_token = ResetToken.get(id=token)
+    reset_token = await ResetToken.get(id=token)
     logger.info("Reset token status used = %s", reset_token.used)
     return reset_token.used
 
 
-def set_reset_token_as_used(token: str) -> None:
+async def set_reset_token_as_used(token: str) -> None:
     logger.info("Set reset token as used")
-    reset_token = ResetToken.get(id=token).update(used=True)
+    reset_token = await ResetToken.get(id=token)
+    await reset_token.update(used=True)
     logger.info("Reset token status used = %s", reset_token.used)
 
 

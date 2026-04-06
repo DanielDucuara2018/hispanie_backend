@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ...action import (
+from hispanie.action import (
     create_activity,
     delete_activity,
     get_current_account,
     read_activities,
     update_activity,
 )
-from ...schema import ActivityCreateRequest, ActivityResponse, ActivityUpdateRequest
+from hispanie.schema import ActivityCreateRequest, ActivityResponse, ActivityUpdateRequest
 
 router = APIRouter(
     prefix="/activity",
@@ -23,7 +23,7 @@ async def create(
 ):
     """Create a new activity for the authenticated account."""
     try:
-        return create_activity(activity_data)
+        return await create_activity(activity_data)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error creating activity: {str(e)}")
 
@@ -35,7 +35,7 @@ async def read(
 ):
     """Retrieve all activities for the authenticated account."""
     try:
-        return read_activities(**({"event_id": event_id} if event_id else {}))
+        return await read_activities(**({"event_id": event_id} if event_id else {}))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving activities: {str(e)}")
 
@@ -48,7 +48,7 @@ async def update(
 ):
     """Update an activity by its id."""
     try:
-        return update_activity(activity_id=activity_id, activity_data=activity_update)
+        return await update_activity(activity_id=activity_id, activity_data=activity_update)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error updating activity: {str(e)}")
 
@@ -60,6 +60,6 @@ async def delete(
 ):
     """Delete an activity by its id."""
     try:
-        return delete_activity(activity_id=activity_id)
+        return await delete_activity(activity_id=activity_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error deleting activity: {str(e)}")

@@ -13,17 +13,7 @@ from fastapi import (
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from hispanie.schema import (
-    AccountCreateRequest,
-    AccountResponse,
-    AccountUpdateRequest,
-    ForgotPasswordRequest,
-    ResetPasswordRequest,
-    Token,
-    ValidateTokenRequest,
-)
-
-from ...action import (
+from hispanie.action import (
     authenticate_account,
     create_access_token,
     create_account,
@@ -36,9 +26,18 @@ from ...action import (
     read_accounts,
     update_account,
 )
-from ...config import Config
-from ...model.account import Account, AccountType
-from ...utils import TOKEN_KEY_NAME
+from hispanie.config import Config
+from hispanie.model.account import Account, AccountType
+from hispanie.schema import (
+    AccountCreateRequest,
+    AccountResponse,
+    AccountUpdateRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    Token,
+    ValidateTokenRequest,
+)
+from hispanie.utils import TOKEN_KEY_NAME
 
 router = APIRouter(
     prefix="/accounts",
@@ -73,7 +72,7 @@ async def login(
     refresh_token_id: str | None = Cookie(None),
 ) -> JSONResponse:
     """Authenticate a account and return an access token."""
-    account = authenticate_account(form_data.username, form_data.password)
+    account = await authenticate_account(form_data.username, form_data.password)
     if not account:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -117,7 +116,7 @@ async def logout(response: Response, _: None = Depends(get_current_account)) -> 
 
 @router.post("/public/validate_reset_token")
 async def validate_reset_token(result: ValidateTokenRequest) -> bool:
-    return is_reset_token_used(result.token)
+    return await is_reset_token_used(result.token)
 
 
 @router.post("/public/forgot_password")
@@ -127,7 +126,7 @@ async def forgot_password(
 ) -> None:
     """Handle forgotten password request for a given account."""
     try:
-        handle_forgotten_password(request.email, background_tasks)
+        await handle_forgotten_password(request.email, background_tasks)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -141,7 +140,7 @@ async def reset_password(
 ) -> None:
     """Handle reset password request for a given account."""
     try:
-        handle_reset_password(**request.model_dump(exclude_none=True))
+        await handle_reset_password(**request.model_dump(exclude_none=True))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -155,7 +154,7 @@ async def create(
 ) -> Account:
     """Create a new account with the provided data."""
     try:
-        return create_account(account_data)
+        return await create_account(account_data)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error creating account: {e}"
@@ -171,7 +170,7 @@ async def read(
     """Get current user data or list all users if admin."""
     if show_all:
         ensure_admin_privileges(current_account)
-        return read_accounts()  # Replace with the method to fetch all users
+        return await read_accounts()  # Replace with the method to fetch all users
 
     return current_account
 
@@ -185,7 +184,7 @@ async def update(
 ) -> Account:
     """Update the current account with the provided data."""
     try:
-        return update_account(current_account.id, account_data)
+        return await update_account(current_account.id, account_data)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error updating account: {e}"
@@ -198,7 +197,7 @@ async def delete(
 ) -> Account:
     """Delete the current account."""
     try:
-        return delete_account(current_account.id)
+        return await delete_account(current_account.id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error deleting account: {e}"

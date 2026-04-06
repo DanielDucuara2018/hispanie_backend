@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from ...action import (
+from hispanie.action import (
     create_ticket,
     delete_ticket,
     get_current_account,
     read_tickets,
     update_ticket,
 )
-from ...schema import TicketCreateRequest, TicketResponse, TicketUpdateRequest
+from hispanie.schema import TicketCreateRequest, TicketResponse, TicketUpdateRequest
 
 router = APIRouter(
     prefix="/ticket",
@@ -23,7 +23,7 @@ async def create(
 ):
     """Create a new ticket for the authenticated account."""
     try:
-        return create_ticket(ticket_data)
+        return await create_ticket(ticket_data)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error creating ticket: {str(e)}")
 
@@ -35,7 +35,7 @@ async def read(
 ):
     """Retrieve all tickets for the authenticated account."""
     try:
-        return read_tickets(**({"event_id": event_id} if event_id else {}))
+        return await read_tickets(**({"event_id": event_id} if event_id else {}))
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving tickets: {str(e)}")
 
@@ -48,7 +48,7 @@ async def update(
 ):
     """Update a ticket by its id."""
     try:
-        return update_ticket(ticket_id=ticket_id, ticket_data=ticket_update)
+        return await update_ticket(ticket_id=ticket_id, ticket_data=ticket_update)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error updating ticket: {str(e)}")
 
@@ -60,6 +60,6 @@ async def delete(
 ):
     """Delete a ticket by its id."""
     try:
-        return delete_ticket(ticket_id=ticket_id)
+        return await delete_ticket(ticket_id=ticket_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error deleting ticket: {str(e)}")

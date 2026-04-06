@@ -2,11 +2,11 @@ from typing import overload
 
 import boto3
 
-from ..config import Config, logging
-from ..model import File
-from ..schema import FileCreateRequest, FileUpdateRequest
-from ..utils import ensure_user_owns_resource
-from .account import read as read_accounts
+from hispanie.action.account import read as read_accounts
+from hispanie.config import Config, logging
+from hispanie.model import File
+from hispanie.schema import FileCreateRequest, FileUpdateRequest
+from hispanie.utils import ensure_user_owns_resource
 
 logger = logging.getLogger(__name__)
 
@@ -44,40 +44,40 @@ def generate_download_presigned_url(filename: str):
     )
 
 
-def create(file_data: FileCreateRequest, account_id: str) -> File:
+async def create(file_data: FileCreateRequest, account_id: str) -> File:
     logger.info("Adding new file %s", file_data)
-    account = read_accounts(account_id)
-    file = File(account=account, **file_data.model_dump()).create()
+    account = await read_accounts(account_id)
+    file = await File(account=account, **file_data.model_dump()).create()
     logger.info("Added new file %s", file.id)
     return file
 
 
 @overload
-def read(file_id: str) -> File: ...
+async def read(file_id: str) -> File: ...
 @overload
-def read(**kwargs) -> list[File]: ...
-def read(file_id: str | None = None, **kwargs) -> File | list[File]:
+async def read(**kwargs) -> list[File]: ...
+async def read(file_id: str | None = None, **kwargs) -> File | list[File]:
     if file_id:
         logger.info("Reading %s data", file_id)
-        return File.get(id=file_id)
+        return await File.get(id=file_id)
     else:
         logger.info("Reading all data")
-        return File.find(**kwargs)
+        return await File.find(**kwargs)
 
 
-def update(file_id: str, account_id: str, event_data: FileUpdateRequest) -> File:
+async def update(file_id: str, account_id: str, event_data: FileUpdateRequest) -> File:
     logger.info("Updating %s file", file_id)
-    file = File.get(id=file_id)
+    file = await File.get(id=file_id)
     ensure_user_owns_resource(account_id, file.account_id)
-    result = file.update(**event_data.model_dump(exclude_none=True))
+    result = await file.update(**event_data.model_dump(exclude_none=True))
     logger.info("Updated file %s", file_id)
     return result
 
 
-def delete(file_id: str, account_id: str) -> File:
+async def delete(file_id: str, account_id: str) -> File:
     logger.info("Deleting %s file", file_id)
-    file = File.get(id=file_id)
+    file = await File.get(id=file_id)
     ensure_user_owns_resource(account_id, file.account_id)
-    result = file.delete()
+    result = await file.delete()
     logger.info("Deleted file %s", file_id)
     return result

@@ -3,11 +3,11 @@ from enum import Enum
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..errors import NoTicketFound
-from ..utils import idun
-from .base import Base
-from .event import Event
-from .resource import Resource
+from hispanie.errors import NoTicketFound
+from hispanie.model.base import Base
+from hispanie.model.event import Event
+from hispanie.model.resource import Resource
+from hispanie.utils import idun
 
 
 class Currency(Enum):

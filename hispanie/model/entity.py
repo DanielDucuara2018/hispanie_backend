@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Float, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .resource import Resource
+from hispanie.model.resource import Resource
 
 
 class Entity(Resource):

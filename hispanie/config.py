@@ -3,7 +3,7 @@ from configparser import ConfigParser
 from dataclasses import dataclass
 from pathlib import Path
 
-from .utils import load_configuration, load_configuration_data
+from hispanie.utils import load_configuration, load_configuration_data
 
 ROOT = Path(__file__).parents[1]
 
@@ -22,6 +22,7 @@ class Database:
     user: str
     ref_table: str
     force_recreate: bool = False
+    alembic_migration: bool = True
 
 
 @dataclass

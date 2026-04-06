@@ -5,11 +5,11 @@ from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..utils import idun
-from .base import Base
-from .business import Business
-from .event import Event
-from .resource import Resource
+from hispanie.model.base import Base
+from hispanie.model.business import Business
+from hispanie.model.event import Event
+from hispanie.model.resource import Resource
+from hispanie.utils import idun
 
 if TYPE_CHECKING:
     from .account import Account

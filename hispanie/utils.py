@@ -84,7 +84,7 @@ def coerce(cls: type[T_coerce], data) -> T_coerce:
         return data
 
     # Check if data is an environment variable placeholder
-    if isinstance(data, str) and "env" in data.lower():
+    if isinstance(data, str) and data.endswith("_ENV"):
         if data in os.environ:
             data = os.environ[data]
         else:
@@ -125,7 +125,7 @@ def ensure_user_owns_resource(current_account_id: str, resource_owner_id: str) -
         raise Exception("You do not have permission to access this resource.")
 
 
-def handle_update_files(files: list[dict[str, Any]], model: Type["T"]) -> list["T"]:
+async def handle_update_files(files: list[dict[str, Any]], model: Type["T"]) -> list["T"]:
     categories = defaultdict(list)
     for item in files:
         categories[item["category"]].append(item)
@@ -138,14 +138,17 @@ def handle_update_files(files: list[dict[str, Any]], model: Type["T"]) -> list["
         if without_id:
             filtered_data.append(model(**without_id[-1]))
             if with_id:
-                [model.get(id=f["id"]).delete() for f in with_id]
+                for f in with_id:
+                    obj = await model.get(id=f["id"])
+                    await obj.delete()
         else:
-            filtered_data.extend([model.get(id=f["id"]) for f in with_id])
+            for f in with_id:
+                filtered_data.append(await model.get(id=f["id"]))
 
     return filtered_data
 
 
-def handle_update_resources(
+async def handle_update_resources(
     new_resources: list[dict[str, Any]],
     old_resources: list["T"],
     model: Type["T"],
@@ -158,11 +161,13 @@ def handle_update_resources(
     resource_ids_to_delete = old_resource_ids - new_resource_ids
     resource_ids_to_create = [sn for sn in new_resources if "id" not in sn]
 
-    [model.get(id=id).delete() for id in resource_ids_to_delete]
+    for id in resource_ids_to_delete:
+        obj = await model.get(id=id)
+        await obj.delete()
 
-    result = [model(**sn) for sn in resource_ids_to_create] + [
-        model.get(id=id) for id in new_resource_ids
-    ]
+    result = [model(**sn) for sn in resource_ids_to_create]
+    for id in new_resource_ids:
+        result.append(await model.get(id=id))
 
     if result and remove_duplicates:
         return delete_duplicates(result, key_duplicates)
