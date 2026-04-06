@@ -61,7 +61,7 @@ async def create(
 ):
     """Create a new event for the authenticated account."""
     try:
-        return create_file(file_data, current_account.id)
+        return await create_file(file_data, current_account.id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error creating event: {str(e)}")
 
@@ -74,7 +74,7 @@ async def read_private(
 ):
     """Retrieve all events for the authenticated account."""
     try:
-        return read_files(account_id=current_account.id)
+        return await read_files(account_id=current_account.id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving events: {str(e)}")
 
@@ -85,7 +85,7 @@ async def read_private(
 async def read_public():
     """Retrieve all events for the authenticated account."""
     try:
-        return read_files(is_public=True)
+        return await read_files(is_public=True)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error retrieving events: {str(e)}")
 
@@ -99,7 +99,7 @@ async def update(
 ):
     """Update an event by its ID. The event must belong to the current account."""
     try:
-        return update_file(file_id, current_account.id, event_update)
+        return await update_file(file_id, current_account.id, event_update)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error updating event: {str(e)}")
 
@@ -112,6 +112,6 @@ async def delete(
 ):
     """Delete an event by its ID. The event must belong to the current account."""
     try:
-        return delete_file(file_id, current_account.id)
+        return await delete_file(file_id, current_account.id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error deleting event: {str(e)}")

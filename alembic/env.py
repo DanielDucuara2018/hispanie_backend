@@ -8,22 +8,15 @@ from alembic.environment import EnvironmentContext
 from hispanie.config import Config
 from hispanie.model.base import Base
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
 target_metadata = Base.metadata
 
-# load database information
 db = Config.database
-engine_url = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}"
+engine_url = f"postgresql+psycopg://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}"
 config.set_main_option("sqlalchemy.url", engine_url)
 
 
